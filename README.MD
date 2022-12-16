@@ -6,7 +6,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/opticon/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/opticon?targetFile=package.json)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
-Zero dependency **opti**on **con**tainer.
+Zero dependency **opti**on **con**tainer library.
 
 **Table of Contents**
 
@@ -19,6 +19,14 @@ Zero dependency **opti**on **con**tainer.
 ```bash
 npm install opticon --save
 ```
+
+---
+**Important NOTE**
+
+The `README.md` file is under construction ☂ at the moment.
+So please stay patient or contribute to it, till it covers all parts ⭐.
+
+---
 
 ## Usage
 
