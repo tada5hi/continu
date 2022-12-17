@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Tada5hi/continu/compare/v1.0.0...v1.0.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* module export and fn/class naming ([ba2df34](https://github.com/Tada5hi/continu/commit/ba2df349603546cfba88ebd3974aa52ec84cc7b3))
+
 # 1.0.0 (2022-12-17)
 
 
