@@ -1,12 +1,13 @@
-# Opticon 🐦
+# Optin 🐦
 
-[![npm version](https://badge.fury.io/js/opticon.svg)](https://badge.fury.io/js/opticon)
-[![main](https://github.com/tada5hi/opticon/actions/workflows/main.yml/badge.svg)](https://github.com/tada5hi/opticon/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/tada5hi/opticon/branch/master/graph/badge.svg?token=0VL41WO0CG)](https://codecov.io/gh/tada5hi/opticon)
-[![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/opticon/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/opticon?targetFile=package.json)
+[![npm version](https://badge.fury.io/js/optin.svg)](https://badge.fury.io/js/optin)
+[![main](https://github.com/tada5hi/optin/actions/workflows/main.yml/badge.svg)](https://github.com/tada5hi/optin/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/tada5hi/optin/branch/master/graph/badge.svg?token=0VL41WO0CG)](https://codecov.io/gh/tada5hi/optin)
+[![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/optin/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/optin?targetFile=package.json)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
-Zero dependency **opti**on **con**tainer library.
+**Optin** is a zero dependency options container library.
+It supports transformation & validation before setting an option.
 
 **Table of Contents**
 
@@ -17,7 +18,7 @@ Zero dependency **opti**on **con**tainer library.
 ## Installation
 
 ```bash
-npm install opticon --save
+npm install optin --save
 ```
 
 ---
@@ -31,7 +32,7 @@ So please stay patient or contribute to it, till it covers all parts ⭐.
 ## Usage
 
 ```typescript
-import { Opticon } from "opticon";
+import { Opticon } from "optin";
 
 type Options = {
     foo: string,
