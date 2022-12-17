@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Tada5hi/continu/compare/v1.0.1...v1.0.2) (2022-12-17)
+
+
+### Bug Fixes
+
+* validators and transformers type ([a0d6dd9](https://github.com/Tada5hi/continu/commit/a0d6dd993d8a77a81ccfbdb38c324fa088e5917d))
+
 ## [1.0.1](https://github.com/Tada5hi/continu/compare/v1.0.0...v1.0.1) (2022-12-17)
 
 
