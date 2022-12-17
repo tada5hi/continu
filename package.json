@@ -1,5 +1,5 @@
 {
-    "name": "optin",
+    "name": "continu",
     "version": "0.0.0",
     "description": "Zero dependency container library.",
     "main": "dist/index.cjs.js",
@@ -39,12 +39,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Tada5hi/optin.git"
+        "url": "git+https://github.com/Tada5hi/continu.git"
     },
     "bugs": {
-        "url": "https://github.com/Tada5hi/optin/issues"
+        "url": "https://github.com/Tada5hi/continu/issues"
     },
-    "homepage": "https://github.com/Tada5hi/optin#readme",
+    "homepage": "https://github.com/Tada5hi/continu#readme",
     "devDependencies": {
         "@babel/core": "^7.20.2",
         "@babel/preset-env": "^7.20.2",
