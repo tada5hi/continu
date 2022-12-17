@@ -8,10 +8,16 @@
 import { OptionMissError } from './error';
 import {
     getObjectProperty,
-    hasObjectProperty, hasOwnProperty, isValidatorResult, removeObjectProperty, setObjectProperty,
+    hasObjectProperty,
+    hasOwnProperty,
+    isValidatorResult,
+    removeObjectProperty,
+    setObjectProperty,
 } from './utils';
+
 import {
-    Context, FlattenObject,
+    Context,
+    FlattenObject,
     ObjectLiteral,
     Transformer,
     Transformers,

@@ -24,7 +24,7 @@ export type TypeFromNestedKeyPath<
     Path extends string,
 > = {
     [K in Path]: K extends keyof T
-        ? Flatten<T[K]>
+        ? T[K]
         : K extends `${infer P}.${infer S}`
             ? Flatten<T[P]> extends ObjectLiteral
                 ? TypeFromNestedKeyPath<Flatten<T[P]>, S>
@@ -41,7 +41,7 @@ export type ObjectLiteral = Record<string, any>;
 export type Transformer<V> = (value: unknown) => V;
 
 export type Transformers<T extends ObjectLiteral> = {
-    [K in keyof T]?: Transformer<T[K]>
+    [K in keyof FlattenObject<T>]?: Transformer<FlattenObject<T>[K]>
 };
 
 export type ValidatorResult<V> = {
@@ -52,7 +52,7 @@ export type ValidatorResult<V> = {
 export type Validator<V> = (value: unknown) => unknown;
 
 export type Validators<T extends ObjectLiteral> = {
-    [K in keyof T]?: Validator<T[K]>
+    [K in keyof FlattenObject<T>]?: Validator<FlattenObject<T>[K]>
 };
 
 export type Context<T extends ObjectLiteral> = {

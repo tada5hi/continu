@@ -8,20 +8,21 @@
 import { FlattenObject, ObjectLiteral } from '../type';
 import { hasOwnProperty } from './has-property';
 
-export function setObjectProperty<
-    O extends ObjectLiteral,
-    K extends keyof FlattenObject<O>,
->(record: O, key: K, value: FlattenObject<O>[K]) {
+export function setObjectProperty(
+    record: ObjectLiteral,
+    key: string,
+    value: unknown,
+) {
     const parts = key.split('.');
     if (parts.length === 1) {
         record[key] = value;
         return;
     }
 
-    const prefix = parts.shift() as (keyof O);
+    const prefix = parts.shift();
 
     if (!Object.prototype.hasOwnProperty.call(record, prefix)) {
-        record[prefix] = {} as O[keyof 0];
+        record[prefix] = {};
     }
 
     setObjectProperty(record[prefix], parts.join('.') as any, value as any);

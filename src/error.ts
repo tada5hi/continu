@@ -7,6 +7,6 @@
 
 export class OptionMissError extends Error {
     constructor(key: string) {
-        super(`The option ${key} is not set.`);
+        super(`The key ${key} is not set.`);
     }
 }
