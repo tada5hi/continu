@@ -7,8 +7,8 @@
 
 import { OptionMissError } from './error';
 import {
-    getNestedProperty,
-    hasNestedProperty, hasOwnProperty, isValidatorResult, removeNestedProperty, setNestedProperty,
+    getObjectProperty,
+    hasObjectProperty, hasOwnProperty, isValidatorResult, removeObjectProperty, setObjectProperty,
 } from './utils';
 import {
     Context, FlattenObject,
@@ -18,7 +18,7 @@ import {
     Validators,
 } from './type';
 
-export class Opticon<
+export class Continu<
     O extends ObjectLiteral,
     I extends { [K in keyof O]?: any } = { [K in keyof O]?: any },
 > {
@@ -68,12 +68,12 @@ export class Opticon<
 
                 if (isValidatorResult<O[K]>(output)) {
                     if (output.success) {
-                        setNestedProperty(this.options, key as any, output.data);
+                        setObjectProperty(this.options, key as any, output.data);
                     }
                 }
 
                 if (typeof output === 'boolean' && output) {
-                    setNestedProperty(this.options, key as any, value);
+                    setObjectProperty(this.options, key as any, value);
                 }
             } catch (e) {
                 // do nothing
@@ -82,7 +82,7 @@ export class Opticon<
             return this;
         }
 
-        setNestedProperty(this.options, key as any, value);
+        setObjectProperty(this.options, key as any, value);
 
         return this;
     }
@@ -115,7 +115,7 @@ export class Opticon<
     }
 
     has(key: keyof FlattenObject<O>) : boolean {
-        return hasNestedProperty(this.options, key as any);
+        return hasObjectProperty(this.options, key as any);
     }
 
     // ----------------------------------------------
@@ -140,7 +140,7 @@ export class Opticon<
             return this;
         }
 
-        removeNestedProperty(this.options, key as any);
+        removeObjectProperty(this.options, key as any);
 
         return this;
     }
@@ -169,12 +169,12 @@ export class Opticon<
             return options as O;
         }
 
-        if (hasNestedProperty(this.options, key as any)) {
-            return getNestedProperty(this.options, key as any) as O[K];
+        if (hasObjectProperty(this.options, key as any)) {
+            return getObjectProperty(this.options, key as any) as O[K];
         }
 
-        if (hasNestedProperty(this.defaults, key as any)) {
-            return getNestedProperty(this.defaults, key as any) as O[K];
+        if (hasObjectProperty(this.defaults, key as any)) {
+            return getObjectProperty(this.defaults, key as any) as O[K];
         }
 
         if (this.errorOnMiss) {
@@ -200,13 +200,13 @@ export class Opticon<
             return this;
         }
 
-        setNestedProperty(this.defaults, key as any, value);
+        setObjectProperty(this.defaults, key as any, value);
 
         return this;
     }
 
     hasDefault(key: keyof FlattenObject<O>) : boolean {
-        return hasNestedProperty(this.defaults, key as any);
+        return hasObjectProperty(this.defaults, key as any);
     }
 
     resetDefault() : this;
@@ -229,7 +229,7 @@ export class Opticon<
             return this;
         }
 
-        removeNestedProperty(this.defaults, key as any);
+        removeObjectProperty(this.defaults, key as any);
 
         return this;
     }
@@ -243,6 +243,6 @@ export class Opticon<
             return this.defaults;
         }
 
-        return getNestedProperty(this.defaults, key as any);
+        return getObjectProperty(this.defaults, key as any);
     }
 }

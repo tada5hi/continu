@@ -5,12 +5,24 @@
     "parserOptions": {
         "project": "./tsconfig.json"
     },
-    "ignorePatterns": ["**/dist/*", "**/*.d.ts", "**/test/*"],
+    "ignorePatterns": ["**/dist/*"],
     "globals": {
         "NodeJS": true
     },
     "rules": {
         "class-methods-use-this": "off",
+
+        "import/no-extraneous-dependencies": [
+            "error", {
+                "devDependencies": [
+                    "**/*.test.js",
+                    "**/*.test.ts",
+                    "**/*.spec.js",
+                    "**/*.spec.ts",
+                    "**/rollup.config.mjs"
+                ]
+            }
+        ],
 
         "no-continue": "off",
         "no-use-before-define": "off",

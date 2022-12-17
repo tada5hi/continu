@@ -5,8 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import {Opticon, ValidatorResult} from "../../src";
-import {OptionMissError} from "../../src/error";
+import { Continu, OptionMissError, ValidatorResult } from '../../src';
 
 type Options = {
     foo: string,
@@ -15,189 +14,189 @@ type Options = {
     nested: {
         key: string
     }
-}
+};
 
 describe('src/module.ts', () => {
     it('should set & get options', () => {
-        const config = new Opticon<Options>();
+        const continu = new Continu<Options>();
 
-        expect(config.has('foo')).toBeFalsy();
-        expect(config.get('foo')).toBeUndefined();
+        expect(continu.has('foo')).toBeFalsy();
+        expect(continu.get('foo')).toBeUndefined();
 
-        expect(config.has('baz')).toBeFalsy();
-        expect(config.get('baz')).toBeUndefined();
+        expect(continu.has('baz')).toBeFalsy();
+        expect(continu.get('baz')).toBeUndefined();
 
-        config.set('foo', 'bar');
+        continu.set('foo', 'bar');
 
-        expect(config.get('foo')).toEqual('bar');
-        expect(config.has('foo')).toBeTruthy();
+        expect(continu.get('foo')).toEqual('bar');
+        expect(continu.has('foo')).toBeTruthy();
 
-        config.set({
-            baz: 0
-        })
+        continu.set({
+            baz: 0,
+        });
 
-        expect(config.get('baz')).toEqual(0);
-        expect(config.has('baz')).toBeTruthy();
+        expect(continu.get('baz')).toEqual(0);
+        expect(continu.has('baz')).toBeTruthy();
     });
 
     it('should validate options', () => {
-        const config = new Opticon<Options>({
+        const continu = new Continu<Options>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
                 baz: (value) => {
                     const output : ValidatorResult<number> = {
                         data: undefined,
-                        success: false
+                        success: false,
                     };
 
-                    if(typeof value === 'number') {
-                        if(value > 5 && value < 10) {
+                    if (typeof value === 'number') {
+                        if (value > 5 && value < 10) {
                             output.success = true;
                             output.data = value;
                         }
                     }
 
                     return output;
-                }
-            }
+                },
+            },
         });
 
-        config.set('foo', '');
-        expect(config.has('foo')).toBeFalsy();
+        continu.set('foo', '');
+        expect(continu.has('foo')).toBeFalsy();
 
-        config.set('foo', 'bar');
-        expect(config.has('foo')).toBeTruthy();
-        expect(config.get('foo')).toEqual('bar');
+        continu.set('foo', 'bar');
+        expect(continu.has('foo')).toBeTruthy();
+        expect(continu.get('foo')).toEqual('bar');
 
-        config.set('baz', 4);
-        expect(config.has('baz')).toBeFalsy();
+        continu.set('baz', 4);
+        expect(continu.has('baz')).toBeFalsy();
 
-        config.set('baz', 6);
-        expect(config.has('baz')).toBeTruthy();
+        continu.set('baz', 6);
+        expect(continu.has('baz')).toBeTruthy();
 
-        expect(config.get()).toEqual({
+        expect(continu.get()).toEqual({
             baz: 6,
-            foo: 'bar'
-        })
+            foo: 'bar',
+        });
 
-        config.reset(['baz']);
-        expect(config.has('baz')).toBeFalsy();
-        expect(config.has('foo')).toBeTruthy();
-    })
+        continu.reset(['baz']);
+        expect(continu.has('baz')).toBeFalsy();
+        expect(continu.has('foo')).toBeTruthy();
+    });
 
     it('should transform options', () => {
-        const config = new Opticon<Options>({
+        const continu = new Continu<Options>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
-                baz: (value) => typeof value === 'number'
+                baz: (value) => typeof value === 'number',
             },
             transformers: {
                 foo: (value) => {
-                    if(typeof value === 'number') {
+                    if (typeof value === 'number') {
                         return `${value}`;
                     }
 
-                    if(typeof value === 'string') {
+                    if (typeof value === 'string') {
                         return value;
                     }
 
-                    throw new Error('Option could not be transformed.')
-                }
-            }
+                    throw new Error('Option could not be transformed.');
+                },
+            },
         });
 
-        expect(config.has('foo')).toBeFalsy();
+        expect(continu.has('foo')).toBeFalsy();
 
-        config.setRaw('foo', 123);
+        continu.setRaw('foo', 123);
 
-        expect(config.has('foo')).toBeTruthy();
-        expect(config.get('foo')).toEqual('123');
+        expect(continu.has('foo')).toBeTruthy();
+        expect(continu.get('foo')).toEqual('123');
 
-        config.reset();
+        continu.reset();
 
-        expect(config.has('foo')).toBeFalsy();
+        expect(continu.has('foo')).toBeFalsy();
 
-        config.setRaw({
+        continu.setRaw({
             foo: '321',
-            baz: 'something'
-        })
+            baz: 'something',
+        });
 
-        expect(config.has('foo')).toBeTruthy();
-        expect(config.has('baz')).toBeFalsy();
+        expect(continu.has('foo')).toBeTruthy();
+        expect(continu.has('baz')).toBeFalsy();
 
-        config.setRaw('baz', 0);
+        continu.setRaw('baz', 0);
 
-        expect(config.has('baz')).toBeTruthy();
+        expect(continu.has('baz')).toBeTruthy();
     });
 
     it('should work with defaults', () => {
-        const config = new Opticon<Options>({
+        const continu = new Continu<Options>({
             defaults: {
-                foo: 'bar'
-            }
+                foo: 'bar',
+            },
         });
 
-        expect(config.has('foo')).toBeFalsy();
-        expect(config.hasDefault('foo')).toBeTruthy();
+        expect(continu.has('foo')).toBeFalsy();
+        expect(continu.hasDefault('foo')).toBeTruthy();
 
-        expect(config.get('foo')).toEqual('bar');
+        expect(continu.get('foo')).toEqual('bar');
 
-        expect(config.has('baz')).toBeFalsy();
-        expect(config.hasDefault('baz')).toBeFalsy();
+        expect(continu.has('baz')).toBeFalsy();
+        expect(continu.hasDefault('baz')).toBeFalsy();
 
-        config.setDefault('baz', 5);
-        expect(config.has('baz')).toBeFalsy();
-        expect(config.hasDefault('baz')).toBeTruthy();
+        continu.setDefault('baz', 5);
+        expect(continu.has('baz')).toBeFalsy();
+        expect(continu.hasDefault('baz')).toBeTruthy();
 
-        config.resetDefault('baz');
-        expect(config.hasDefault('baz')).toBeFalsy();
+        continu.resetDefault('baz');
+        expect(continu.hasDefault('baz')).toBeFalsy();
 
-        expect(config.getDefault()).toEqual({
-            foo: 'bar'
-        })
-
-        config.resetDefault(['foo']);
-        expect(config.hasDefault('foo')).toBeFalsy();
-
-        config.setDefault({
-            foo: 'foo'
+        expect(continu.getDefault()).toEqual({
+            foo: 'bar',
         });
 
-        expect(config.hasDefault('foo')).toBeTruthy();
-        expect(config.getDefault('foo')).toEqual('foo');
+        continu.resetDefault(['foo']);
+        expect(continu.hasDefault('foo')).toBeFalsy();
 
-        config.resetDefault();
+        continu.setDefault({
+            foo: 'foo',
+        });
 
-        expect(config.hasDefault('foo')).toBeFalsy();
-        expect(config.getDefault('foo')).toBeFalsy();
-    })
+        expect(continu.hasDefault('foo')).toBeTruthy();
+        expect(continu.getDefault('foo')).toEqual('foo');
+
+        continu.resetDefault();
+
+        expect(continu.hasDefault('foo')).toBeFalsy();
+        expect(continu.getDefault('foo')).toBeFalsy();
+    });
 
     it('should throw error on miss', () => {
-        const config = new Opticon<Options>({
-            errorOnMiss: true
+        const continu = new Continu<Options>({
+            errorOnMiss: true,
         });
 
-        expect(config.has('foo')).toBeFalsy();
+        expect(continu.has('foo')).toBeFalsy();
 
         try {
-            expect(config.get('foo')).toThrow(OptionMissError);
+            expect(continu.get('foo')).toThrow(OptionMissError);
             expect(true).toBe(false);
         } catch (e) {
             expect(e).toBeDefined();
         }
-    })
+    });
 
     it('should set & get nested option', () => {
-        const config = new Opticon<Options>();
+        const continu = new Continu<Options>();
 
-        expect(config.has('nested.key')).toBeFalsy();
-        expect(config.get('nested.key')).toBeFalsy();
-        expect(config.get('nested')).toBeFalsy();
+        expect(continu.has('nested.key')).toBeFalsy();
+        expect(continu.get('nested.key')).toBeFalsy();
+        expect(continu.get('nested')).toBeFalsy();
 
-        config.set('nested.key', 'test');
+        continu.set('nested.key', 'test');
 
-        expect(config.has('nested.key')).toBeTruthy();
-        expect(config.get('nested.key')).toEqual('test');
-        expect(config.get('nested')).toEqual({ key: 'test'})
-    })
-})
+        expect(continu.has('nested.key')).toBeTruthy();
+        expect(continu.get('nested.key')).toEqual('test');
+        expect(continu.get('nested')).toEqual({ key: 'test' });
+    });
+});

@@ -8,7 +8,7 @@
 import { FlattenObject, ObjectLiteral } from '../type';
 import { hasOwnProperty } from './has-property';
 
-export function setNestedProperty<
+export function setObjectProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K, value: FlattenObject<O>[K]) {
@@ -24,10 +24,10 @@ export function setNestedProperty<
         record[prefix] = {} as O[keyof 0];
     }
 
-    setNestedProperty(record[prefix], parts.join('.') as any, value as any);
+    setObjectProperty(record[prefix], parts.join('.') as any, value as any);
 }
 
-export function hasNestedProperty<
+export function hasObjectProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) : boolean {
@@ -42,10 +42,10 @@ export function hasNestedProperty<
         return false;
     }
 
-    return hasNestedProperty(record[prefix], parts.join('.'));
+    return hasObjectProperty(record[prefix], parts.join('.'));
 }
 
-export function removeNestedProperty<
+export function removeObjectProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) {
@@ -64,10 +64,10 @@ export function removeNestedProperty<
         return;
     }
 
-    removeNestedProperty(record[prefix], parts.join('.'));
+    removeObjectProperty(record[prefix], parts.join('.'));
 }
 
-export function getNestedProperty<
+export function getObjectProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) : FlattenObject<O>[K] {
@@ -82,5 +82,5 @@ export function getNestedProperty<
         return undefined;
     }
 
-    return getNestedProperty(record[prefix], parts.join('.'));
+    return getObjectProperty(record[prefix], parts.join('.'));
 }

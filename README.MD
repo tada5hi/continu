@@ -39,23 +39,23 @@ type Options = {
     foo: string
 }
 
-const config = new Continu<Options>();
+const continu = new Continu<Options>();
 
-console.log(config.has('foo'));
+console.log(continu.has('foo'));
 // false
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // undefined
 
-config.set('foo', 'bar');
+continu.set('foo', 'bar');
 
-console.log(config.has('foo'));
+console.log(continu.has('foo'));
 // true
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // bar
 
-config.reset('foo');
+continu.reset('foo');
 
-console.log(config.has('foo'));
+console.log(continu.has('foo'));
 // false
 ```
 
@@ -69,22 +69,22 @@ type Options = {
     foo: string
 }
 
-const config = new Continu<Options>({
+const continu = new Continu<Options>({
     defaults: {
         foo: 'bar'
     }
 });
 
-console.log(config.has('foo'));
+console.log(continu.has('foo'));
 // false
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // 'bar'
 
-config.set('foo', 'baz');
+continu.set('foo', 'baz');
 
-console.log(config.has('foo'));
+console.log(continu.has('foo'));
 // true
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // 'baz'
 
 ```
@@ -102,7 +102,7 @@ type Options = {
     foo: string
 }
 
-const config = new Continu<Options>({
+const continu = new Continu<Options>({
     transformers: {
         foo: (value) => {
             if(typeof value === 'number') {
@@ -118,17 +118,17 @@ const config = new Continu<Options>({
     }
 });
 
-config.set('foo', '123');
+continu.set('foo', '123');
 
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // '123'
 
-config.set('foo', 456);
+continu.set('foo', 456);
 
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // '456'
 
-config.set('foo', {bar: 'baz'});
+continu.set('foo', {bar: 'baz'});
 // this statement will throw an error!
 ```
 
@@ -144,20 +144,20 @@ type Options = {
     foo: string
 }
 
-const config = new Continu<Options>({
+const continu = new Continu<Options>({
     validators: {
         foo: (value) => typeof value === 'string' && value.length > 3,
     }
 });
 
-config.set('foo', 'bar');
+continu.set('foo', 'bar');
 
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // undefined
 
-config.set('foo', 'bar-baz');
+continu.set('foo', 'bar-baz');
 
-console.log(config.get('foo'));
+console.log(continu.get('foo'));
 // 'bar-baz'
 
 ```
@@ -176,23 +176,23 @@ type Options = {
     }
 }
 
-const config = new Continu<Options>();
+const continu = new Continu<Options>();
 
-console.log(config.has('nested.foo'));
+console.log(continu.has('nested.foo'));
 // false
-console.log(config.get('nested.foo'));
+console.log(continu.get('nested.foo'));
 // undefined
 
-config.set('nested.foo', 'bar');
+continu.set('nested.foo', 'bar');
 
-console.log(config.has('nested.foo'));
+console.log(continu.has('nested.foo'));
 // true
-console.log(config.get('nested.foo'));
+console.log(continu.get('nested.foo'));
 // 'bar'
 
-console.log(config.has('nested'));
+console.log(continu.has('nested'));
 // true;
-console.log(config.get('nested'));
+console.log(continu.get('nested'));
 // { foo: 'bar' }
 ```
 
