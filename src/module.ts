@@ -6,9 +6,12 @@
  */
 
 import { OptionMissError } from './error';
-import { hasOwnProperty, isValidatorResult } from './utils';
 import {
-    Context,
+    getNestedProperty,
+    hasNestedProperty, hasOwnProperty, isValidatorResult, removeNestedProperty, setNestedProperty,
+} from './utils';
+import {
+    Context, FlattenObject,
     ObjectLiteral,
     Transformer,
     Transformers,
@@ -44,13 +47,13 @@ export class Opticon<
 
     // -------------------------------------------------
 
-    set(value: Partial<O>) : this;
+    set(value: Partial<FlattenObject<O>>) : this;
 
-    set<K extends keyof O>(key: K, value: O[K]) : this;
+    set<K extends keyof FlattenObject<O>>(key: K, value: FlattenObject<O>[K]) : this;
 
-    set<K extends keyof O>(key: (keyof O) | Partial<O>, value?: O[K]) : this {
+    set<K extends keyof FlattenObject<O>>(key: K | Partial<FlattenObject<O>>, value?: FlattenObject<O>[K]) : this {
         if (typeof key === 'object') {
-            const keys = Object.keys(key);
+            const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
             for (let i = 0; i < keys.length; i++) {
                 this.set(keys[i], key[keys[i]]);
             }
@@ -65,12 +68,12 @@ export class Opticon<
 
                 if (isValidatorResult<O[K]>(output)) {
                     if (output.success) {
-                        this.options[key] = output.data;
+                        setNestedProperty(this.options, key as any, output.data);
                     }
                 }
 
                 if (typeof output === 'boolean' && output) {
-                    this.options[key] = value;
+                    setNestedProperty(this.options, key as any, value);
                 }
             } catch (e) {
                 // do nothing
@@ -79,18 +82,18 @@ export class Opticon<
             return this;
         }
 
-        this.options[key] = value;
+        setNestedProperty(this.options, key as any, value);
 
         return this;
     }
 
-    setRaw(value: I) : this;
+    setRaw(value: Partial<FlattenObject<I>>) : this;
 
-    setRaw<K extends keyof O>(key: K, value: I[K]) : this;
+    setRaw<K extends keyof FlattenObject<I>>(key: K, value: FlattenObject<I>[K]) : this;
 
-    setRaw<K extends keyof O>(key: K | I, value?: I[K]) : this {
+    setRaw<K extends keyof FlattenObject<I>>(key: K | FlattenObject<I>, value?: FlattenObject<I>[K]) : this {
         if (typeof key === 'object') {
-            const keys = Object.keys(key);
+            const keys = Object.keys(key) as (keyof FlattenObject<I>)[];
             for (let i = 0; i < keys.length; i++) {
                 this.setRaw(keys[i], key[keys[i]]);
             }
@@ -99,31 +102,31 @@ export class Opticon<
         }
 
         if (hasOwnProperty(this.transformers, key)) {
-            this.set(key, (this.transformers[key] as Transformer<O[K]>)(value));
+            this.set(key as any, (this.transformers[key] as Transformer<O[K]>)(value));
 
             return this;
         }
 
         if (hasOwnProperty(this.validators, key)) {
-            this.set(key, value as unknown as O[K]);
+            this.set(key as any, value as unknown as O[K]);
         }
 
         return this;
     }
 
-    has(key: keyof O) : boolean {
-        return hasOwnProperty(this.options, key);
+    has(key: keyof FlattenObject<O>) : boolean {
+        return hasNestedProperty(this.options, key as any);
     }
 
     // ----------------------------------------------
 
     reset() : this;
 
-    reset(key: keyof O) : this;
+    reset(key: keyof FlattenObject<O>) : this;
 
-    reset(keys: (keyof O)[]) : this;
+    reset(keys: (keyof FlattenObject<O>)[]) : this;
 
-    reset(key?: (keyof O) | (keyof O)[]) : this {
+    reset(key?: (keyof FlattenObject<O>) | (keyof FlattenObject<O>)[]) : this {
         if (typeof key === 'undefined') {
             this.options = {};
             return this;
@@ -137,9 +140,7 @@ export class Opticon<
             return this;
         }
 
-        if (hasOwnProperty(this.options, key)) {
-            delete this.options[key];
-        }
+        removeNestedProperty(this.options, key as any);
 
         return this;
     }
@@ -148,16 +149,16 @@ export class Opticon<
 
     get() : O;
 
-    get<K extends keyof O>(key: K) : O[K];
+    get<K extends keyof FlattenObject<O>>(key: K) : FlattenObject<O>[K];
 
-    get<K extends keyof O>(key?: K) : any {
+    get<K extends keyof FlattenObject<O>>(key?: K) : any {
         if (typeof key === 'undefined') {
             const keys = [
                 ...new Set([
                     ...Object.keys(this.defaults),
                     ...Object.keys(this.options),
                 ]),
-            ];
+            ] as (keyof FlattenObject<O>)[];
 
             const options : Record<string, any> = {};
 
@@ -167,12 +168,13 @@ export class Opticon<
 
             return options as O;
         }
-        if (hasOwnProperty(this.options, key)) {
-            return this.options[key] as O[K];
+
+        if (hasNestedProperty(this.options, key as any)) {
+            return getNestedProperty(this.options, key as any) as O[K];
         }
 
-        if (hasOwnProperty(this.defaults, key)) {
-            return this.defaults[key] as O[K];
+        if (hasNestedProperty(this.defaults, key as any)) {
+            return getNestedProperty(this.defaults, key as any) as O[K];
         }
 
         if (this.errorOnMiss) {
@@ -184,13 +186,13 @@ export class Opticon<
 
     // ----------------------------------------------
 
-    setDefault(value: Partial<O>) : this;
+    setDefault(value: Partial<FlattenObject<O>>) : this;
 
-    setDefault<K extends keyof O>(key: K, value: O[K]) : this;
+    setDefault<K extends keyof FlattenObject<O>>(key: K, value: FlattenObject<O>[K]) : this;
 
-    setDefault<K extends keyof O>(key: (keyof O) | Partial<O>, value?: O[K]) : this {
+    setDefault<K extends keyof FlattenObject<O>>(key: (keyof O) | Partial<FlattenObject<O>>, value?: FlattenObject<O>[K]) : this {
         if (typeof key === 'object') {
-            const keys = Object.keys(key);
+            const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
             for (let i = 0; i < keys.length; i++) {
                 this.setDefault(keys[i], key[keys[i]]);
             }
@@ -198,22 +200,22 @@ export class Opticon<
             return this;
         }
 
-        this.defaults[key] = value;
+        setNestedProperty(this.defaults, key as any, value);
 
         return this;
     }
 
-    hasDefault(key: keyof O) : boolean {
-        return hasOwnProperty(this.defaults, key);
+    hasDefault(key: keyof FlattenObject<O>) : boolean {
+        return hasNestedProperty(this.defaults, key as any);
     }
 
     resetDefault() : this;
 
-    resetDefault(key: keyof O) : this;
+    resetDefault(key: keyof FlattenObject<O>) : this;
 
-    resetDefault(keys: (keyof O)[]) : this;
+    resetDefault(keys: (keyof FlattenObject<O>)[]) : this;
 
-    resetDefault(key?: (keyof O) | (keyof O)[]) : this {
+    resetDefault(key?: (keyof FlattenObject<O>) | (keyof FlattenObject<O>)[]) : this {
         if (typeof key === 'undefined') {
             this.defaults = {};
             return this;
@@ -227,26 +229,20 @@ export class Opticon<
             return this;
         }
 
-        if (hasOwnProperty(this.defaults, key)) {
-            delete this.defaults[key];
-        }
+        removeNestedProperty(this.defaults, key as any);
 
         return this;
     }
 
     getDefault() : O;
 
-    getDefault<K extends keyof O>(key?: K) : O[K];
+    getDefault<K extends keyof FlattenObject<O>>(key?: K) : FlattenObject<O>[K];
 
-    getDefault<K extends keyof O>(key?: K) : any {
+    getDefault<K extends keyof FlattenObject<O>>(key?: K) : any {
         if (typeof key === 'undefined') {
             return this.defaults;
         }
 
-        if (hasOwnProperty(this.defaults, key)) {
-            return this.defaults[key] as O[K];
-        }
-
-        return undefined;
+        return getNestedProperty(this.defaults, key as any);
     }
 }

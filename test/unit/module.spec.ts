@@ -11,6 +11,10 @@ import {OptionMissError} from "../../src/error";
 type Options = {
     foo: string,
     baz: number,
+
+    nested: {
+        key: string
+    }
 }
 
 describe('src/module.ts', () => {
@@ -181,5 +185,19 @@ describe('src/module.ts', () => {
         } catch (e) {
             expect(e).toBeDefined();
         }
+    })
+
+    it('should set & get nested option', () => {
+        const config = new Opticon<Options>();
+
+        expect(config.has('nested.key')).toBeFalsy();
+        expect(config.get('nested.key')).toBeFalsy();
+        expect(config.get('nested')).toBeFalsy();
+
+        config.set('nested.key', 'test');
+
+        expect(config.has('nested.key')).toBeTruthy();
+        expect(config.get('nested.key')).toEqual('test');
+        expect(config.get('nested')).toEqual({ key: 'test'})
     })
 })
