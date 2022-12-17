@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Tada5hi/continu/compare/v1.0.2...v1.0.3) (2022-12-17)
+
+
+### Bug Fixes
+
+* types destination directory ([13e7379](https://github.com/Tada5hi/continu/commit/13e7379249fdb9aede4f11ce6f66abddefc5d17b))
+
 ## [1.0.2](https://github.com/Tada5hi/continu/compare/v1.0.1...v1.0.2) (2022-12-17)
 
 
