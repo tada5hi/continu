@@ -6,7 +6,8 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/continu/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/continu?targetFile=package.json)
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
-**Continu** is a simple & lightweight container library for key value pairs.
+**Continu** is a powerful tool for managing key-value pairs in an application.
+Its simple and lightweight design makes it easy to use.
 Besides, defining default values it is also possible to execute transformations & validations before setting any value.
 
 **Table of Contents**
