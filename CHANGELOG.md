@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/Tada5hi/continu/compare/v1.0.3...v1.0.4) (2022-12-18)
+
+
+### Bug Fixes
+
+* spelling & dump version ([c8a452b](https://github.com/Tada5hi/continu/commit/c8a452be99a7d97f03c98cae837299878c7521ea))
+
 ## [1.0.3](https://github.com/Tada5hi/continu/compare/v1.0.2...v1.0.3) (2022-12-17)
 
 
