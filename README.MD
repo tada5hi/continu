@@ -31,7 +31,7 @@ npm install continu --save
 
 ### Basic
 
-On the basic level, this library can be used as container for arbitrary data.
+On the basic level, this library can be used as container for arbitrary key value pairs.
 
 ```typescript
 import { Continu } from 'continu';

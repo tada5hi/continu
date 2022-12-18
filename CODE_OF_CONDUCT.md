@@ -34,9 +34,5 @@ or permanently any contributor for other behaviors that they deem inappropriate,
 
 ## Contact
 If you feel uncomfortable or believe that someone has violated the code of conduct, p
-lease contact us at contact@example.com. 
+lease contact us at [admin@tada5hi.net](mailto:admin@tada5hi.net). 
 We will thoroughly investigate the incident and aim for the best possible outcome.
-
-## Attribution
-This code of conduct is based on the [Citizen Code of Conduct](https://citizencodeofconduct.org/). 
-The original text is available under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
