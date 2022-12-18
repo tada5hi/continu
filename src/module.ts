@@ -7,12 +7,12 @@
 
 import { OptionMissError } from './error';
 import {
-    getObjectProperty,
-    hasObjectProperty,
+    getObjectPathProperty,
+    hasObjectPathProperty,
     hasOwnProperty,
     isValidatorResult,
-    removeObjectProperty,
-    setObjectProperty,
+    removeObjectPathProperty,
+    setObjectPathProperty,
 } from './utils';
 
 import {
@@ -74,12 +74,12 @@ export class Continu<
 
                 if (isValidatorResult<O[K]>(output)) {
                     if (output.success) {
-                        setObjectProperty(this.options, key as any, output.data);
+                        setObjectPathProperty(this.options, key as any, output.data);
                     }
                 }
 
                 if (typeof output === 'boolean' && output) {
-                    setObjectProperty(this.options, key as any, value);
+                    setObjectPathProperty(this.options, key as any, value);
                 }
             } catch (e) {
                 // do nothing
@@ -88,7 +88,7 @@ export class Continu<
             return this;
         }
 
-        setObjectProperty(this.options, key as any, value);
+        setObjectPathProperty(this.options, key as any, value);
 
         return this;
     }
@@ -121,7 +121,7 @@ export class Continu<
     }
 
     has(key: keyof FlattenObject<O>) : boolean {
-        return hasObjectProperty(this.options, key as any);
+        return hasObjectPathProperty(this.options, key as any);
     }
 
     // ----------------------------------------------
@@ -146,7 +146,7 @@ export class Continu<
             return this;
         }
 
-        removeObjectProperty(this.options, key as any);
+        removeObjectPathProperty(this.options, key as any);
 
         return this;
     }
@@ -175,12 +175,12 @@ export class Continu<
             return options as O;
         }
 
-        if (hasObjectProperty(this.options, key as any)) {
-            return getObjectProperty(this.options, key as any) as O[K];
+        if (hasObjectPathProperty(this.options, key as any)) {
+            return getObjectPathProperty(this.options, key as any) as O[K];
         }
 
-        if (hasObjectProperty(this.defaults, key as any)) {
-            return getObjectProperty(this.defaults, key as any) as O[K];
+        if (hasObjectPathProperty(this.defaults, key as any)) {
+            return getObjectPathProperty(this.defaults, key as any) as O[K];
         }
 
         if (this.errorOnMiss) {
@@ -206,13 +206,13 @@ export class Continu<
             return this;
         }
 
-        setObjectProperty(this.defaults, key as any, value);
+        setObjectPathProperty(this.defaults, key as any, value);
 
         return this;
     }
 
     hasDefault(key: keyof FlattenObject<O>) : boolean {
-        return hasObjectProperty(this.defaults, key as any);
+        return hasObjectPathProperty(this.defaults, key as any);
     }
 
     resetDefault() : this;
@@ -235,7 +235,7 @@ export class Continu<
             return this;
         }
 
-        removeObjectProperty(this.defaults, key as any);
+        removeObjectPathProperty(this.defaults, key as any);
 
         return this;
     }
@@ -249,6 +249,6 @@ export class Continu<
             return this.defaults;
         }
 
-        return getObjectProperty(this.defaults, key as any);
+        return getObjectPathProperty(this.defaults, key as any);
     }
 }

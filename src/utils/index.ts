@@ -6,6 +6,6 @@
  */
 
 export * from './has-property';
-export * from './nested';
+export * from './object-path';
 export * from './object';
 export * from './validator';

@@ -8,7 +8,7 @@
 import { FlattenObject, ObjectLiteral } from '../type';
 import { hasOwnProperty } from './has-property';
 
-export function setObjectProperty(
+export function setObjectPathProperty(
     record: ObjectLiteral,
     key: string,
     value: unknown,
@@ -25,10 +25,10 @@ export function setObjectProperty(
         record[prefix] = {};
     }
 
-    setObjectProperty(record[prefix], parts.join('.') as any, value as any);
+    setObjectPathProperty(record[prefix], parts.join('.') as any, value as any);
 }
 
-export function hasObjectProperty<
+export function hasObjectPathProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) : boolean {
@@ -43,10 +43,10 @@ export function hasObjectProperty<
         return false;
     }
 
-    return hasObjectProperty(record[prefix], parts.join('.'));
+    return hasObjectPathProperty(record[prefix], parts.join('.'));
 }
 
-export function removeObjectProperty<
+export function removeObjectPathProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) {
@@ -65,10 +65,10 @@ export function removeObjectProperty<
         return;
     }
 
-    removeObjectProperty(record[prefix], parts.join('.'));
+    removeObjectPathProperty(record[prefix], parts.join('.'));
 }
 
-export function getObjectProperty<
+export function getObjectPathProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
 >(record: O, key: K) : FlattenObject<O>[K] {
@@ -83,5 +83,5 @@ export function getObjectProperty<
         return undefined;
     }
 
-    return getObjectProperty(record[prefix], parts.join('.'));
+    return getObjectPathProperty(record[prefix], parts.join('.'));
 }
