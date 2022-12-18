@@ -18,6 +18,7 @@ Besides, defining default values it is also possible to execute transformations 
   - [Transformation](#transformation)
   - [Validation](#validation)
   - [Nesting](#nesting)
+- [Contributing](#contributing)
 - [License](#license)
 
 ## Installation
@@ -195,6 +196,13 @@ console.log(continu.has('nested'));
 console.log(continu.get('nested'));
 // { foo: 'bar' }
 ```
+
+## Contributing
+
+Before you start working on a pull request, please review the guidelines for [contributing](./CONTRIBUTING.md)
+and the [code of conduct](./CODE_OF_CONDUCT.md).
+These guidelines will help you understand how to contribute effectively and will
+also help ensure that your contribution is accepted.
 
 ## License
 
