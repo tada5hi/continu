@@ -2,7 +2,7 @@
 The goal is to create a community that is open and welcoming to all individuals. 
 To achieve this, we have developed a code of conduct that outlines the expectations for behavior of all members of our community.
 
-## Our Pledge
+## Pledge
 This community is founded on respect and understanding.
 All members are expected to treat others with respect and empathy, and to not tolerate any form of discrimination, 
 harassment, or attacks.
@@ -24,7 +24,7 @@ Examples of unacceptable behavior by participants include:
 - Publishing others' private information, such as a physical or electronic address, without explicit permission
 - Other conduct which could reasonably be considered inappropriate in a professional setting
 
-## Our Responsibilities
+## Responsibilities
 Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate
 and fair corrective action in response to any instances of unacceptable behavior.
 
