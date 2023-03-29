@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Tada5hi/continu/compare/v1.0.5...v1.1.0) (2023-03-29)
+
+
+### Features
+
+* refactored build system + output exports ([7493a98](https://github.com/Tada5hi/continu/commit/7493a98bfd311477d003e3fa2c9c0ed20b2cda24))
+
 ## [1.0.5](https://github.com/Tada5hi/continu/compare/v1.0.4...v1.0.5) (2023-01-11)
 
 
