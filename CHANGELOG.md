@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/Tada5hi/continu/compare/v1.0.4...v1.0.5) (2023-01-11)
+
+
+### Bug Fixes
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([5ad5f31](https://github.com/Tada5hi/continu/commit/5ad5f316d0f66c156d12a9fbb6f61466b6a0bf01))
+
 ## [1.0.4](https://github.com/Tada5hi/continu/compare/v1.0.3...v1.0.4) (2022-12-18)
 
 
