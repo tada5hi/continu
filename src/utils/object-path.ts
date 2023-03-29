@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { FlattenObject, ObjectLiteral } from '../type';
+import type { FlattenObject, ObjectLiteral } from '../type';
 import { hasOwnProperty } from './has-property';
 
 export function setObjectPathProperty(
@@ -20,12 +20,13 @@ export function setObjectPathProperty(
     }
 
     const prefix = parts.shift();
+    if (prefix) {
+        if (!Object.prototype.hasOwnProperty.call(record, prefix)) {
+            record[prefix] = {};
+        }
 
-    if (!Object.prototype.hasOwnProperty.call(record, prefix)) {
-        record[prefix] = {};
+        setObjectPathProperty(record[prefix], parts.join('.') as any, value as any);
     }
-
-    setObjectPathProperty(record[prefix], parts.join('.') as any, value as any);
 }
 
 export function hasObjectPathProperty<
@@ -38,12 +39,15 @@ export function hasObjectPathProperty<
     }
 
     const prefix = parts.shift();
+    if (prefix) {
+        if (!hasOwnProperty(record, prefix)) {
+            return false;
+        }
 
-    if (!hasOwnProperty(record, prefix)) {
-        return false;
+        return hasObjectPathProperty(record[prefix], parts.join('.'));
     }
 
-    return hasObjectPathProperty(record[prefix], parts.join('.'));
+    return false;
 }
 
 export function removeObjectPathProperty<
@@ -60,28 +64,32 @@ export function removeObjectPathProperty<
     }
 
     const prefix = parts.shift();
+    if (prefix) {
+        if (!hasOwnProperty(record, prefix)) {
+            return;
+        }
 
-    if (!hasOwnProperty(record, prefix)) {
-        return;
+        removeObjectPathProperty(record[prefix], parts.join('.'));
     }
-
-    removeObjectPathProperty(record[prefix], parts.join('.'));
 }
 
 export function getObjectPathProperty<
     O extends ObjectLiteral,
     K extends keyof FlattenObject<O>,
->(record: O, key: K) : FlattenObject<O>[K] {
+>(record: O, key: K) : FlattenObject<O>[K] | undefined {
     const parts = key.split('.');
     if (parts.length === 1) {
         return record[key];
     }
 
     const prefix = parts.shift();
+    if (prefix) {
+        if (!hasOwnProperty(record, prefix)) {
+            return undefined;
+        }
 
-    if (!hasOwnProperty(record, prefix)) {
-        return undefined;
+        return getObjectPathProperty(record[prefix], parts.join('.'));
     }
 
-    return getObjectPathProperty(record[prefix], parts.join('.'));
+    return undefined;
 }

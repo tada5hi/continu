@@ -5,11 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import commonjs from '@rollup/plugin-commonjs';
+
 import resolve from '@rollup/plugin-node-resolve';
-import babel from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import pkg from './package.json' assert {type: 'json'};
+
+import { transform } from "@swc/core";
 
 const extensions = [
     '.js', '.jsx', '.ts', '.tsx',
@@ -25,19 +26,25 @@ export default [
 
         plugins: [
             // Allows node_modules resolution
-            resolve({ extensions}),
-
-            // Allow bundling cjs modules. Rollup doesn't understand cjs
-            commonjs(),
+            resolve({ extensions: ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts']}),
 
             // Compile TypeScript/JavaScript files
-            babel({
-                extensions,
-                babelHelpers: 'bundled',
-                include: [
-                    'src/**/*'
-                ],
-            }),
+            {
+                name: 'swc',
+                transform(code) {
+                    return transform(code, {
+                        jsc: {
+                            target: 'es2020',
+                            parser: {
+                                syntax: 'typescript'
+                            },
+                            loose: true
+                        },
+                        sourceMaps: true
+                    });
+                }
+            },
+
             terser({
                 output: {
                     ecma: 5,
@@ -47,10 +54,12 @@ export default [
         output: [
             {
                 file: pkg.main,
-                format: 'cjs'
+                format: 'cjs',
+                sourcemap: true
             }, {
                 file: pkg.module,
-                format: 'esm'
+                format: 'esm',
+                sourcemap: true
             }
         ]
     }

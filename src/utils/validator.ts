@@ -7,7 +7,7 @@
 
 import { hasOwnProperty } from './has-property';
 import { isObject } from './object';
-import { ValidatorResult } from '../type';
+import type { ValidatorResult } from '../type';
 
 export function isValidatorResult<V>(value: unknown) : value is ValidatorResult<V> {
     return isObject(value) &&

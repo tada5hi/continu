@@ -2,6 +2,9 @@
     "extends": "./tsconfig.json",
     "include": [
         "src/**/*",
-        "test/**/*"
+        "test/**/*",
+        "commitlint.config.js",
+        "release.config.js",
+        "rollup.config.mjs"
     ]
 }

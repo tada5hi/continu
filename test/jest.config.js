@@ -8,7 +8,7 @@
 module.exports = {
     testEnvironment: 'node',
     transform: {
-        '^.+\\.tsx?$': 'ts-jest',
+        '^.+\\.tsx?$': '@swc/jest',
     },
     moduleFileExtensions: [
         'ts',
@@ -27,7 +27,7 @@ module.exports = {
     coverageDirectory: 'coverage',
     collectCoverageFrom: [
         '!src/**/*.d.ts',
-        'src/**/*.ts'
+        'src/**/*.ts',
     ],
     coverageThreshold: {
         global: {

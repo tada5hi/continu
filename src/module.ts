@@ -15,7 +15,7 @@ import {
     setObjectPathProperty,
 } from './utils';
 
-import {
+import type {
     Context,
     FlattenObject,
     ObjectLiteral,
@@ -61,6 +61,8 @@ export class Continu<
         if (typeof key === 'object') {
             const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
             for (let i = 0; i < keys.length; i++) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 this.set(keys[i], key[keys[i]]);
             }
 
@@ -200,6 +202,8 @@ export class Continu<
         if (typeof key === 'object') {
             const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
             for (let i = 0; i < keys.length; i++) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 this.setDefault(keys[i], key[keys[i]]);
             }
 

@@ -49,10 +49,10 @@ export type ValidatorResult<V> = {
     data: V
 };
 
-export type Validator<V> = (value: unknown) => unknown;
+export type Validator = (value: unknown) => unknown;
 
 export type Validators<T extends ObjectLiteral> = {
-    [K in keyof FlattenObject<T>]?: Validator<FlattenObject<T>[K]>
+    [K in keyof FlattenObject<T>]?: Validator
 };
 
 export type Context<T extends ObjectLiteral> = {
