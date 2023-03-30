@@ -6,6 +6,15 @@
  */
 
 import { OptionMissError } from './error';
+import type {
+    Context,
+    ContinuBaseInterface,
+    FlattenObject, Getters,
+    ObjectLiteral,
+    Transformer,
+    Transformers,
+    Validators,
+} from './type';
 import {
     getObjectPathProperty,
     hasObjectPathProperty,
@@ -15,22 +24,15 @@ import {
     setObjectPathProperty,
 } from './utils';
 
-import type {
-    Context,
-    FlattenObject,
-    ObjectLiteral,
-    Transformer,
-    Transformers,
-    Validators,
-} from './type';
-
 export class Continu<
     O extends ObjectLiteral,
     I extends { [K in keyof O]?: any } = { [K in keyof O]?: any },
-> {
+> implements ContinuBaseInterface<O> {
     protected options : Partial<O>;
 
     protected defaults: Partial<O>;
+
+    protected getters : Getters<O>;
 
     protected transformers: Transformers<O>;
 
@@ -45,6 +47,7 @@ export class Continu<
 
         this.options = context.options || {};
         this.defaults = context.defaults || {};
+        this.getters = context.getters || {};
         this.transformers = context.transformers || {};
         this.validators = context.validators || {};
 
@@ -179,6 +182,11 @@ export class Continu<
 
         if (hasObjectPathProperty(this.options, key as any)) {
             return getObjectPathProperty(this.options, key as any) as O[K];
+        }
+
+        const getter = this.getters[key];
+        if (getter) {
+            return getter(this);
         }
 
         if (hasObjectPathProperty(this.defaults, key as any)) {

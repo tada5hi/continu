@@ -55,8 +55,32 @@ export type Validators<T extends ObjectLiteral> = {
     [K in keyof FlattenObject<T>]?: Validator
 };
 
+export interface ContinuBaseInterface<O extends ObjectLiteral> {
+    has(key: keyof FlattenObject<O>) : boolean;
+
+    get() : O;
+
+    get<K extends keyof FlattenObject<O>>(key: K) : FlattenObject<O>[K];
+
+    get<K extends keyof FlattenObject<O>>(key?: K) : any;
+
+    hasDefault(key: keyof FlattenObject<O>) : boolean;
+
+    getDefault() : O;
+
+    getDefault<K extends keyof FlattenObject<O>>(key?: K) : FlattenObject<O>[K];
+
+    getDefault<K extends keyof FlattenObject<O>>(key?: K) : any
+}
+
+export type Getter<O extends ObjectLiteral, V> = (context: ContinuBaseInterface<O>) => V;
+export type Getters<T extends ObjectLiteral> = {
+    [K in keyof FlattenObject<T>]?: Getter<T, FlattenObject<T>[K]>
+};
+
 export type Context<T extends ObjectLiteral> = {
     defaults?: Partial<T>,
+    getters?: Getters<T>,
     options?: Partial<T>,
     transformers?: Transformers<T>,
     validators?: Validators<T>,

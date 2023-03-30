@@ -5,10 +5,12 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Continu, OptionMissError, ValidatorResult } from '../../src';
+import type { ValidatorResult } from '../../src';
+import { Continu, OptionMissError } from '../../src';
 
 type Options = {
     foo: string,
+    bar: string,
     baz: number,
 
     nested: {
@@ -198,5 +200,22 @@ describe('src/module.ts', () => {
         expect(continu.has('nested.key')).toBeTruthy();
         expect(continu.get('nested.key')).toEqual('test');
         expect(continu.get('nested')).toEqual({ key: 'test' });
+    });
+
+    it('should use dynamic getters', () => {
+        const continu = new Continu<Options>({
+            defaults: {
+                foo: 'bar',
+            },
+            getters: {
+                bar: (context) => `${context.get('foo')}:baz`,
+            },
+        });
+
+        expect(continu.has('foo')).toBeFalsy();
+        expect(continu.has('bar')).toBeFalsy();
+
+        expect(continu.get('foo')).toEqual('bar');
+        expect(continu.get('bar')).toEqual('bar:baz');
     });
 });
