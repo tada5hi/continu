@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Tada5hi/continu/compare/v1.1.0...v1.2.0) (2023-03-30)
+
+
+### Features
+
+* dynamic option getters ([6e4709b](https://github.com/Tada5hi/continu/commit/6e4709bfaa45b753bc2669ae69fb0ae4cb031a59))
+
 # [1.1.0](https://github.com/Tada5hi/continu/compare/v1.0.5...v1.1.0) (2023-03-29)
 
 
