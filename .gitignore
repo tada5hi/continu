@@ -9,4 +9,4 @@ coverage
 npm-debug.log*
 .idea
 reports
-coverage
+.env
