@@ -230,7 +230,7 @@ const continu = new Continu<Options>({
 // since a key path may not be accessible until a getter has been evaluated.
 console.log(continu.has('nested'));
 
-console.lgo(continu.get('nested'));
+console.log(continu.get('nested'));
 // { foo: 'bar' }
 
 console.log(continu.get('nested.baz'));
