@@ -5,91 +5,90 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { FlattenObject, ObjectLiteral } from '../type';
+import type { ObjectLiteral } from '../type';
 import { hasOwnProperty } from './has-property';
+import { isObject } from './object';
 
 export function setObjectPathProperty(
     record: ObjectLiteral,
     key: string,
     value: unknown,
 ) {
-    const parts = key.split('.');
-    if (parts.length === 1) {
-        record[key] = value;
+    const dotIndex = key.indexOf('.');
+    const currentKey = dotIndex === -1 ?
+        key :
+        key.substring(0, dotIndex);
+
+    if (dotIndex === -1) {
+        record[currentKey] = value;
         return;
     }
 
-    const prefix = parts.shift();
-    if (prefix) {
-        if (!Object.prototype.hasOwnProperty.call(record, prefix)) {
-            record[prefix] = {};
-        }
-
-        setObjectPathProperty(record[prefix], parts.join('.') as any, value as any);
+    if (!Object.prototype.hasOwnProperty.call(record, currentKey)) {
+        record[currentKey] = {};
     }
+
+    const nextKey = key.substring(currentKey.length + 1);
+    setObjectPathProperty(record[currentKey], nextKey, value);
 }
 
-export function hasObjectPathProperty<
-    O extends ObjectLiteral,
-    K extends keyof FlattenObject<O>,
->(record: O, key: K) : boolean {
-    const parts = key.split('.');
-    if (parts.length === 1) {
-        return hasOwnProperty(record, key);
+export function hasObjectPathProperty(data: ObjectLiteral, key: string) : boolean {
+    const dotIndex = key.indexOf('.');
+    const currentKey = dotIndex === -1 ?
+        key :
+        key.substring(0, dotIndex);
+
+    if (dotIndex === -1) {
+        return !!hasOwnProperty(data, currentKey);
     }
 
-    const prefix = parts.shift();
-    if (prefix) {
-        if (!hasOwnProperty(record, prefix)) {
-            return false;
-        }
-
-        return hasObjectPathProperty(record[prefix], parts.join('.'));
+    if (!isObject(data[currentKey])) {
+        return false;
     }
 
-    return false;
+    const nextKey = key.substring(currentKey.length + 1);
+    return hasObjectPathProperty(data[currentKey], nextKey);
 }
 
-export function removeObjectPathProperty<
-    O extends ObjectLiteral,
-    K extends keyof FlattenObject<O>,
->(record: O, key: K) {
-    const parts = key.split('.');
-    if (parts.length === 1) {
-        if (hasOwnProperty(record, key)) {
-            delete record[key];
+export function removeObjectPathProperty(
+    data: Record<string, any>,
+    key: string,
+) {
+    const dotIndex = key.indexOf('.');
+    const currentKey = dotIndex === -1 ?
+        key :
+        key.substring(0, dotIndex);
+
+    if (dotIndex === -1) {
+        if (hasOwnProperty(data, currentKey)) {
+            delete data[currentKey];
         }
 
         return;
     }
 
-    const prefix = parts.shift();
-    if (prefix) {
-        if (!hasOwnProperty(record, prefix)) {
-            return;
-        }
-
-        removeObjectPathProperty(record[prefix], parts.join('.'));
+    if (!isObject(data[currentKey])) {
+        return;
     }
+
+    const nextKey = key.substring(currentKey.length + 1);
+    getObjectPathProperty(data[currentKey], nextKey);
 }
 
-export function getObjectPathProperty<
-    O extends ObjectLiteral,
-    K extends keyof FlattenObject<O>,
->(record: O, key: K) : FlattenObject<O>[K] | undefined {
-    const parts = key.split('.');
-    if (parts.length === 1) {
-        return record[key];
+export function getObjectPathProperty(data: Record<string, any>, key: string) : any {
+    const dotIndex = key.indexOf('.');
+    const currentKey = dotIndex === -1 ?
+        key :
+        key.substring(0, dotIndex);
+
+    if (dotIndex === -1) {
+        return data[currentKey];
     }
 
-    const prefix = parts.shift();
-    if (prefix) {
-        if (!hasOwnProperty(record, prefix)) {
-            return undefined;
-        }
-
-        return getObjectPathProperty(record[prefix], parts.join('.'));
+    if (!isObject(data[currentKey])) {
+        return undefined;
     }
 
-    return undefined;
+    const nextKey = key.substring(currentKey.length + 1);
+    return getObjectPathProperty(data[currentKey], nextKey);
 }

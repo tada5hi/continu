@@ -78,7 +78,7 @@ export type Getters<T extends ObjectLiteral> = {
     [K in keyof FlattenObject<T>]?: Getter<T, FlattenObject<T>[K]>
 };
 
-export type Context<T extends ObjectLiteral> = {
+export type Context<T extends ObjectLiteral = ObjectLiteral> = {
     defaults?: Partial<T>,
     getters?: Getters<T>,
     options?: Partial<T>,

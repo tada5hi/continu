@@ -6,6 +6,7 @@
  */
 
 import { OptionMissError } from './error';
+import { evaluatePathForDynamicGetters } from './getter';
 import type {
     Context,
     ContinuBaseInterface,
@@ -180,17 +181,17 @@ export class Continu<
             return options as O;
         }
 
-        if (hasObjectPathProperty(this.options, key as any)) {
-            return getObjectPathProperty(this.options, key as any) as O[K];
+        if (hasObjectPathProperty(this.options, key)) {
+            return getObjectPathProperty(this.options, key) as O[K];
         }
 
-        const getter = this.getters[key];
-        if (getter) {
-            return getter(this);
+        const dynamicGetter = evaluatePathForDynamicGetters(this.getters, key, this);
+        if (dynamicGetter.success) {
+            return dynamicGetter.data;
         }
 
-        if (hasObjectPathProperty(this.defaults, key as any)) {
-            return getObjectPathProperty(this.defaults, key as any) as O[K];
+        if (hasObjectPathProperty(this.defaults, key)) {
+            return getObjectPathProperty(this.defaults, key) as O[K];
         }
 
         if (this.errorOnMiss) {

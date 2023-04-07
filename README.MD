@@ -1,4 +1,4 @@
-# Continu 🌱
+# Continu 🐯
 
 [![npm version](https://badge.fury.io/js/continu.svg)](https://badge.fury.io/js/continu)
 [![main](https://github.com/tada5hi/continu/actions/workflows/main.yml/badge.svg)](https://github.com/tada5hi/continu/actions/workflows/main.yml)

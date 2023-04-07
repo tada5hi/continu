@@ -218,4 +218,23 @@ describe('src/module.ts', () => {
         expect(continu.get('foo')).toEqual('bar');
         expect(continu.get('bar')).toEqual('bar:baz');
     });
+
+    it('should access property of dynamic getter', () => {
+        const continu = new Continu<Options>({
+            defaults: {
+                foo: 'bar',
+            },
+            getters: {
+                nested: (context) => ({
+                    key: 'bar',
+                }),
+            },
+        });
+
+        expect(continu.has('nested')).toBeFalsy();
+        expect(continu.has('nested.key')).toBeFalsy();
+
+        expect(continu.get('nested')).toEqual({ key: 'bar' });
+        expect(continu.get('nested.key')).toEqual('bar');
+    });
 });
