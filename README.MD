@@ -19,6 +19,7 @@ Besides, defining default values it is also possible to execute transformations 
   - [Transformation](#transformation)
   - [Validation](#validation)
   - [Nesting](#nesting)
+  - [Getters](#getters)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -196,6 +197,44 @@ console.log(continu.has('nested'));
 // true;
 console.log(continu.get('nested'));
 // { foo: 'bar' }
+```
+
+### Getters
+
+It is also possible to define dynamic getters for specific key (paths).
+
+```typescript
+import { Continu } from 'continu';
+
+type Options = {
+    foo: string,
+    nested: {
+        baz: string
+    }
+}
+
+const continu = new Continu<Options>({
+    defaults: {
+        foo: 'bar'
+    },
+    getters: {
+        nested: (context) => {
+            return {
+                baz: context.getDefault('foo')
+            }
+        }
+    }
+});
+
+// always evaluates to false,
+// since a key path may not be accessible until a getter has been evaluated.
+console.log(continu.has('nested'));
+
+console.lgo(continu.get('nested'));
+// { foo: 'bar' }
+
+console.log(continu.get('nested.baz'));
+// 'bar'
 ```
 
 ## Contributing
