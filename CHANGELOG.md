@@ -1,6 +1,36 @@
 # [1.2.0](https://github.com/Tada5hi/continu/compare/v1.1.0...v1.2.0) (2023-03-30)
 
 
+## v1.3.0
+
+[compare changes](https://github.com/Tada5hi/continu/compare/v1.2.0...v1.3.0)
+
+
+### 🚀 Enhancements
+
+  - Nested access on dynamic getter + enhance object pÃath access ([d828fd5](https://github.com/Tada5hi/continu/commit/d828fd5))
+
+### 🩹 Fixes
+
+  - Context type of dynamic getter evaluation ([7aec4eb](https://github.com/Tada5hi/continu/commit/7aec4eb))
+
+### 📖 Documentation
+
+  - Add README.md section for dynamic getters ([49905a8](https://github.com/Tada5hi/continu/commit/49905a8))
+  - Fix typeo in console.log ([4c27268](https://github.com/Tada5hi/continu/commit/4c27268))
+
+### 📦 Build
+
+  - **deps-dev:** Bump @swc/core from 1.3.42 to 1.3.44 ([#68](https://github.com/Tada5hi/continu/pull/68))
+  - **deps-dev:** Bump typescript from 5.0.2 to 5.0.4 ([#74](https://github.com/Tada5hi/continu/pull/74))
+  - **deps-dev:** Bump @rollup/plugin-node-resolve from 15.0.1 to 15.0.2 ([#73](https://github.com/Tada5hi/continu/pull/73))
+  - **deps-dev:** Bump @swc/core from 1.3.44 to 1.3.46 ([#72](https://github.com/Tada5hi/continu/pull/72))
+  - Replaced semantic release with changelogen ([4ee61a1](https://github.com/Tada5hi/continu/commit/4ee61a1))
+
+### ❤️  Contributors
+
+- Tada5hi <peter.placzek1996@gmail.com>
+
 ### Features
 
 * dynamic option getters ([6e4709b](https://github.com/Tada5hi/continu/commit/6e4709bfaa45b753bc2669ae69fb0ae4cb031a59))
