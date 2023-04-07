@@ -1,6 +1,19 @@
 # [1.2.0](https://github.com/Tada5hi/continu/compare/v1.1.0...v1.2.0) (2023-03-30)
 
 
+## v1.3.1
+
+[compare changes](https://github.com/Tada5hi/continu/compare/v1.3.0...v1.3.1)
+
+
+### 🩹 Fixes
+
+  - **deps:** Set changelogen as dev-dependency ([65530f4](https://github.com/Tada5hi/continu/commit/65530f4))
+
+### ❤️  Contributors
+
+- Tada5hi <peter.placzek1996@gmail.com>
+
 ## v1.3.0
 
 [compare changes](https://github.com/Tada5hi/continu/compare/v1.2.0...v1.3.0)
