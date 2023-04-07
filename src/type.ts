@@ -55,7 +55,7 @@ export type Validators<T extends ObjectLiteral> = {
     [K in keyof FlattenObject<T>]?: Validator
 };
 
-export interface ContinuBaseInterface<O extends ObjectLiteral> {
+export interface ContinuBaseInterface<O extends ObjectLiteral = ObjectLiteral> {
     has(key: keyof FlattenObject<O>) : boolean;
 
     get() : O;
