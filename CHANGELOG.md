@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/Tada5hi/continu/compare/v1.3.1...v1.3.2) (2023-06-29)
+
+
+### Bug Fixes
+
+* minor changes to pub release ([0984287](https://github.com/Tada5hi/continu/commit/098428747fa4a975b835cd5279b8e2b9f1a5b6e7))
+
 # [1.2.0](https://github.com/Tada5hi/continu/compare/v1.1.0...v1.2.0) (2023-03-30)
 
 
