@@ -14,12 +14,12 @@ export function setObjectPathProperty(
     key: string,
     value: unknown,
 ) {
-    const dotIndex = key.indexOf('.');
-    const currentKey = dotIndex === -1 ?
+    const index = key.indexOf('.');
+    const currentKey = index === -1 ?
         key :
-        key.substring(0, dotIndex);
+        key.substring(0, index);
 
-    if (dotIndex === -1) {
+    if (index === -1) {
         record[currentKey] = value;
         return;
     }
@@ -33,12 +33,12 @@ export function setObjectPathProperty(
 }
 
 export function hasObjectPathProperty(data: ObjectLiteral, key: string) : boolean {
-    const dotIndex = key.indexOf('.');
-    const currentKey = dotIndex === -1 ?
+    const index = key.indexOf('.');
+    const currentKey = index === -1 ?
         key :
-        key.substring(0, dotIndex);
+        key.substring(0, index);
 
-    if (dotIndex === -1) {
+    if (index === -1) {
         return !!hasOwnProperty(data, currentKey);
     }
 
@@ -54,12 +54,12 @@ export function removeObjectPathProperty(
     data: Record<string, any>,
     key: string,
 ) {
-    const dotIndex = key.indexOf('.');
-    const currentKey = dotIndex === -1 ?
+    const index = key.indexOf('.');
+    const currentKey = index === -1 ?
         key :
-        key.substring(0, dotIndex);
+        key.substring(0, index);
 
-    if (dotIndex === -1) {
+    if (index === -1) {
         if (hasOwnProperty(data, currentKey)) {
             delete data[currentKey];
         }
@@ -76,12 +76,12 @@ export function removeObjectPathProperty(
 }
 
 export function getObjectPathProperty(data: Record<string, any>, key: string) : any {
-    const dotIndex = key.indexOf('.');
-    const currentKey = dotIndex === -1 ?
+    const index = key.indexOf('.');
+    const currentKey = index === -1 ?
         key :
-        key.substring(0, dotIndex);
+        key.substring(0, index);
 
-    if (dotIndex === -1) {
+    if (index === -1) {
         return data[currentKey];
     }
 
