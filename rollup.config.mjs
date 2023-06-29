@@ -7,14 +7,9 @@
 
 
 import resolve from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
 import pkg from './package.json' assert {type: 'json'};
 
 import { transform } from "@swc/core";
-
-const extensions = [
-    '.js', '.jsx', '.ts', '.tsx',
-];
 
 export default [
     {
@@ -26,7 +21,11 @@ export default [
 
         plugins: [
             // Allows node_modules resolution
-            resolve({ extensions: ['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts']}),
+            resolve({
+                extensions: [
+                '.js', '.mjs', '.cjs', '.ts', '.mts', '.cts'
+                ]
+            }),
 
             // Compile TypeScript/JavaScript files
             {
@@ -43,13 +42,7 @@ export default [
                         sourceMaps: true
                     });
                 }
-            },
-
-            terser({
-                output: {
-                    ecma: 5,
-                },
-            }),
+            }
         ],
         output: [
             {
