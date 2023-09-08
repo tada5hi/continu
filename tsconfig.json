@@ -6,7 +6,8 @@
         ],
         "module": "ESNext",
         "outDir": "dist",
-        "target": "ESNext"
+        "target": "ESNext",
+        "strict": true
     },
     "include": [
         "src/**/*.ts"

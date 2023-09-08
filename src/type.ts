@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+export type ObjectLiteral = Record<string, any>;
 export type Flatten<Type> = Type extends Array<infer Item> ? Item : Type;
 
 type PrevIndex = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
@@ -36,12 +37,56 @@ export type FlattenObject<O extends ObjectLiteral> = {
     [K in NestedKeys<O>]: TypeFromNestedKeyPath<O, K>
 };
 
-export type ObjectLiteral = Record<string, any>;
+type ReadonlyDeep<T extends ObjectLiteral> = {
+    readonly [K in keyof T]: T[K] extends Fn ?
+        T[K] :
+        T[K] extends ObjectLiteral ?
+            ReadonlyDeep<T[K]> :
+            T[K]
+};
+
+export type KeysOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T];
+export type RequiredKeys<T> = Exclude<KeysOfType<T, Exclude<T[keyof T], undefined>>, undefined>;
+export type OptionalKeys<T> = Exclude<keyof T, RequiredKeys<T>>;
+
+type ROL<T1, T2> = T2 extends NonNullable<infer U> ? U | NonNullable<T1> : T1 | T2;
+
+export type DeepMerge<T1, T2> = (
+    T1 extends ObjectLiteral ? (
+        T2 extends ObjectLiteral ? (
+            (
+                {
+                    [K in (keyof T2 & keyof T1 & RequiredKeys<T1 | T2>)]: DeepMerge<T1[K], T2[K]>
+                }
+                &
+                {
+                    [K in (keyof T2 & keyof T1 & OptionalKeys<T1 | T2>)]?: DeepMerge<T1[K], T2[K]>
+                }
+                & {
+                    [K in Exclude<RequiredKeys<T1>, keyof T2>]: T1[K]
+                }
+                &
+                {
+                    [K in Exclude<OptionalKeys<T1>, keyof T2>]?: T1[K]
+                }
+                &
+                {
+                    [K in Exclude<RequiredKeys<T2>, keyof T1>]: T2[K]
+                }
+                &
+                {
+                    [K in Exclude<OptionalKeys<T2>, keyof T1>]?: T2[K]
+                }
+            )
+        ) : ROL<T1, T2>
+    ) : (
+        ROL<T1, T2>
+    )
+    );
 
 export type Transformer<V> = (value: unknown) => V;
-
 export type Transformers<T extends ObjectLiteral> = {
-    [K in keyof FlattenObject<T>]?: Transformer<FlattenObject<T>[K]>
+    [K in keyof T]?: Transformer<T[K]>
 };
 
 export type ValidatorResult<V> = {
@@ -50,40 +95,75 @@ export type ValidatorResult<V> = {
 };
 
 export type Validator = (value: unknown) => unknown;
-
 export type Validators<T extends ObjectLiteral> = {
-    [K in keyof FlattenObject<T>]?: Validator
+    [K in keyof T]?: Validator
 };
 
-export interface ContinuBaseInterface<O extends ObjectLiteral = ObjectLiteral> {
-    has(key: keyof FlattenObject<O>) : boolean;
+export interface IContainer<
+    DATA extends ObjectLiteral = ObjectLiteral,
+    DEFAULTS extends ObjectLiteral = DATA,
 
-    get() : O;
+    F1 extends FlattenObject<DATA> = FlattenObject<DATA>,
+    F2 extends FlattenObject<DEFAULTS> = FlattenObject<DEFAULTS>,
+> {
+    hasGetter(key: string) : boolean;
 
-    get<K extends keyof FlattenObject<O>>(key: K) : FlattenObject<O>[K];
+    getGetter(key: string) : any;
 
-    get<K extends keyof FlattenObject<O>>(key?: K) : any;
+    hasRaw(key: keyof F1) : boolean;
 
-    hasDefault(key: keyof FlattenObject<O>) : boolean;
+    getRaw<K extends keyof F1>(key: K) : F1[K];
 
-    getDefault() : O;
+    hasDefault(key: keyof F2) : boolean;
 
-    getDefault<K extends keyof FlattenObject<O>>(key?: K) : FlattenObject<O>[K];
-
-    getDefault<K extends keyof FlattenObject<O>>(key?: K) : any
+    getDefault<K extends keyof F2>(key?: K) : F2[K];
 }
 
-export type Getter<O extends ObjectLiteral, V> = (context: ContinuBaseInterface<O>) => V;
-export type Getters<T extends ObjectLiteral> = {
-    [K in keyof FlattenObject<T>]?: Getter<T, FlattenObject<T>[K]>
+type Fn = (...args: any[]) => any;
+
+export type Getter = (context: IContainer) => any;
+
+export type Getters<
+    T extends ObjectLiteral,
+> = {
+    [K in keyof T]?: T[K] extends Getter ?
+        Getter :
+        T[K] extends ObjectLiteral ?
+            Getters<T[K]> :
+            never;
 };
 
-export type Context<T extends ObjectLiteral = ObjectLiteral> = {
-    defaults?: Partial<T>,
-    getters?: Getters<T>,
-    options?: Partial<T>,
-    transformers?: Transformers<T>,
-    validators?: Validators<T>,
+export type Options<
+    DATA extends ObjectLiteral = ObjectLiteral,
+    DEFAULTS extends ObjectLiteral = DATA,
+    GETTERS extends Getters<ObjectLiteral> = Getters<ObjectLiteral>,
+> = {
+    data?: DATA,
+    defaults?: DEFAULTS,
+    getters?: GETTERS,
+    transformers?: Transformers<DeepMerge<DATA, DEFAULTS>>,
+    validators?: Validators<DeepMerge<DATA, DEFAULTS>>,
 
     errorOnMiss?: boolean
 };
+
+type GettersToRecord<
+    T,
+> = T extends Getters<any> ?
+    {
+        [K in keyof T]: T[K] extends Getters<any> ?
+            GettersToRecord<T[K]> :
+            T[K] extends Getter ? ReturnType<T[K]> : never
+    } :
+    never;
+
+export type ContainerProxy<
+    DATA extends ObjectLiteral = ObjectLiteral,
+    DEFAULTS extends ObjectLiteral = DATA,
+    GETTERS extends ObjectLiteral = ObjectLiteral,
+    E = DeepMerge<DATA, DEFAULTS>,
+> = E & ReadonlyDeep<
+GettersToRecord<
+Omit<GETTERS, keyof E>
+>
+>;

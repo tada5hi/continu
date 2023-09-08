@@ -6,7 +6,7 @@
  */
 
 import type { ValidatorResult } from '../../src';
-import { Continu, OptionMissError } from '../../src';
+import { Container, OptionMissError } from '../../src';
 
 type Options = {
     foo: string,
@@ -20,7 +20,7 @@ type Options = {
 
 describe('src/module.ts', () => {
     it('should set & get options', () => {
-        const continu = new Continu<Options>();
+        const continu = new Container<Options>();
 
         expect(continu.has('foo')).toBeFalsy();
         expect(continu.get('foo')).toBeUndefined();
@@ -42,7 +42,7 @@ describe('src/module.ts', () => {
     });
 
     it('should validate options', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
                 baz: (value) => {
@@ -87,7 +87,7 @@ describe('src/module.ts', () => {
     });
 
     it('should transform options', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
                 baz: (value) => typeof value === 'number',
@@ -132,7 +132,7 @@ describe('src/module.ts', () => {
     });
 
     it('should work with defaults', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             defaults: {
                 foo: 'bar',
             },
@@ -174,7 +174,7 @@ describe('src/module.ts', () => {
     });
 
     it('should throw error on miss', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             errorOnMiss: true,
         });
 
@@ -189,7 +189,7 @@ describe('src/module.ts', () => {
     });
 
     it('should set & get nested option', () => {
-        const continu = new Continu<Options>();
+        const continu = new Container<Options>();
 
         expect(continu.has('nested.key')).toBeFalsy();
         expect(continu.get('nested.key')).toBeFalsy();
@@ -203,7 +203,7 @@ describe('src/module.ts', () => {
     });
 
     it('should use dynamic getters', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             defaults: {
                 foo: 'bar',
             },
@@ -220,7 +220,7 @@ describe('src/module.ts', () => {
     });
 
     it('should access property of dynamic getter', () => {
-        const continu = new Continu<Options>({
+        const continu = new Container<Options>({
             defaults: {
                 foo: 'bar',
             },
