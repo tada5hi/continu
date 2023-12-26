@@ -6,21 +6,23 @@
  */
 
 import type { ValidatorResult } from '../../src';
-import { Container, OptionMissError } from '../../src';
+import {
+    Container, OptionMissError, createContainer, defineGetter,
+} from '../../src';
 
-type Options = {
-    foo: string,
-    bar: string,
-    baz: number,
+type Data = {
+    foo?: string,
+    bar?: string,
+    baz?: number,
 
-    nested: {
-        key: string
+    nested?: {
+        key?: string
     }
 };
 
 describe('src/module.ts', () => {
     it('should set & get options', () => {
-        const continu = new Container<Options>();
+        const continu = createContainer<Data>();
 
         expect(continu.has('foo')).toBeFalsy();
         expect(continu.get('foo')).toBeUndefined();
@@ -42,12 +44,12 @@ describe('src/module.ts', () => {
     });
 
     it('should validate options', () => {
-        const continu = new Container<Options>({
+        const continu = createContainer<Data>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
                 baz: (value) => {
                     const output : ValidatorResult<number> = {
-                        data: undefined,
+                        data: 1,
                         success: false,
                     };
 
@@ -87,7 +89,7 @@ describe('src/module.ts', () => {
     });
 
     it('should transform options', () => {
-        const continu = new Container<Options>({
+        const continu = new Container<Data>({
             validators: {
                 foo: (value) => typeof value === 'string' && value.length > 2,
                 baz: (value) => typeof value === 'number',
@@ -109,36 +111,35 @@ describe('src/module.ts', () => {
 
         expect(continu.has('foo')).toBeFalsy();
 
-        continu.setRaw('foo', 123);
+        continu.set('foo', '123');
 
         expect(continu.has('foo')).toBeTruthy();
         expect(continu.get('foo')).toEqual('123');
 
-        continu.reset();
+        continu.reset('foo');
 
         expect(continu.has('foo')).toBeFalsy();
 
-        continu.setRaw({
-            foo: '321',
-            baz: 'something',
-        });
+        continu.setRaw('foo', '321');
+        continu.setRaw('baz', 'something');
 
         expect(continu.has('foo')).toBeTruthy();
         expect(continu.has('baz')).toBeFalsy();
 
-        continu.setRaw('baz', 0);
+        continu.set('baz', 1);
 
         expect(continu.has('baz')).toBeTruthy();
     });
 
     it('should work with defaults', () => {
-        const continu = new Container<Options>({
+        const continu = new Container({
+            data: {} as Data,
             defaults: {
                 foo: 'bar',
-            },
+            } as Data,
         });
 
-        expect(continu.has('foo')).toBeFalsy();
+        expect(continu.has('foo')).toBeTruthy();
         expect(continu.hasDefault('foo')).toBeTruthy();
 
         expect(continu.get('foo')).toEqual('bar');
@@ -147,7 +148,7 @@ describe('src/module.ts', () => {
         expect(continu.hasDefault('baz')).toBeFalsy();
 
         continu.setDefault('baz', 5);
-        expect(continu.has('baz')).toBeFalsy();
+        expect(continu.has('baz')).toBeTruthy();
         expect(continu.hasDefault('baz')).toBeTruthy();
 
         continu.resetDefault('baz');
@@ -166,15 +167,10 @@ describe('src/module.ts', () => {
 
         expect(continu.hasDefault('foo')).toBeTruthy();
         expect(continu.getDefault('foo')).toEqual('foo');
-
-        continu.resetDefault();
-
-        expect(continu.hasDefault('foo')).toBeFalsy();
-        expect(continu.getDefault('foo')).toBeFalsy();
     });
 
     it('should throw error on miss', () => {
-        const continu = new Container<Options>({
+        const continu = new Container<Data>({
             errorOnMiss: true,
         });
 
@@ -189,13 +185,21 @@ describe('src/module.ts', () => {
     });
 
     it('should set & get nested option', () => {
-        const continu = new Container<Options>();
+        const continu = new Container({
+            data: {
+                nested: {
+                    key: 'bar',
+                },
+            } as Data,
+        });
 
-        expect(continu.has('nested.key')).toBeFalsy();
-        expect(continu.get('nested.key')).toBeFalsy();
-        expect(continu.get('nested')).toBeFalsy();
+        expect(continu.has('nested.key')).toBeTruthy();
+        expect(continu.get('nested.key')).toEqual('bar');
+        expect(continu.get('nested')).toEqual({ key: 'bar' });
 
-        continu.set('nested.key', 'test');
+        continu.set('nested', {
+            key: 'test',
+        });
 
         expect(continu.has('nested.key')).toBeTruthy();
         expect(continu.get('nested.key')).toEqual('test');
@@ -203,36 +207,37 @@ describe('src/module.ts', () => {
     });
 
     it('should use dynamic getters', () => {
-        const continu = new Container<Options>({
+        const continu = new Container({
             defaults: {
                 foo: 'bar',
             },
             getters: {
-                bar: (context) => `${context.get('foo')}:baz`,
+                bar: defineGetter((context) => `${context.get('foo')}:baz`),
             },
         });
 
-        expect(continu.has('foo')).toBeFalsy();
-        expect(continu.has('bar')).toBeFalsy();
+        expect(continu.has('foo')).toBeTruthy();
+        expect(continu.has('bar')).toBeTruthy();
 
         expect(continu.get('foo')).toEqual('bar');
         expect(continu.get('bar')).toEqual('bar:baz');
     });
 
     it('should access property of dynamic getter', () => {
-        const continu = new Container<Options>({
+        const continu = new Container({
             defaults: {
                 foo: 'bar',
             },
             getters: {
-                nested: (context) => ({
+                nested: () => ({
                     key: 'bar',
                 }),
             },
         });
 
-        expect(continu.has('nested')).toBeFalsy();
+        expect(continu.has('nested')).toBeTruthy();
         expect(continu.has('nested.key')).toBeFalsy();
+        expect(continu.has('nested.key', true)).toBeTruthy();
 
         expect(continu.get('nested')).toEqual({ key: 'bar' });
         expect(continu.get('nested.key')).toEqual('bar');

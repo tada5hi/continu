@@ -5,10 +5,9 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import { Container } from './module';
+import type { Container } from './module';
 import type {
-    ContainerProxy, Getter,
-    Getters, IContainer, ObjectLiteral,
+    ContainerProxy,
 } from './type';
 
 type ToContainerProxy<T> = T extends Container<infer DATA, infer DEFAULT, infer GETTERS> ?
@@ -66,56 +65,3 @@ export function createProxy<
         },
     }) as ToContainerProxy<T>;
 }
-
-// todo: keep defaults
-
-type Context = {
-    /**
-     * foo
-     */
-    host: string
-};
-
-const data : Context = {
-    /**
-     * foo
-     */
-    host: 'localhost',
-};
-
-const wrapper = new Container({
-    data,
-    getters: {
-        port: (data) => {
-            if (data.hasRaw('port')) {
-                return data.getRaw('port') as number;
-            }
-
-            return 0;
-        },
-        'nested.key': (data) => ({
-            foo: data.getRaw('port') as number,
-            bar: () => ({
-                baz: 'boz',
-            }),
-        }),
-    },
-    transformers: {
-    },
-});
-
-wrapper.reset('port');
-
-const proxy = createProxy(wrapper);
-
-const { port } = proxy;
-
-const nestedKey = proxy['nested.key'];
-if (nestedKey) {
-    const b = nestedKey.foo + 1;
-}
-
-const pass = (ctx: ContainerProxy<Context, {port: number, host: string}>) => {
-    const n = 1 + ctx.port;
-};
-pass(proxy);
