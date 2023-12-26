@@ -5,9 +5,9 @@ name: CI
 
 on:
     push:
-        branches: [master, next, beta, alpha]
+        branches: [master, next, beta, alpha, develop]
     pull_request:
-        branches: [master, next, beta, alpha]
+        branches: [master, next, beta, alpha, develop]
 
 permissions:
     packages: write
