@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { hasObjectPathProperty, setObjectPathProperty } from '../../src';
 
 describe('src/utils/object-path', () => {

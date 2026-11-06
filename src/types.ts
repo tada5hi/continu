@@ -10,27 +10,26 @@ export type ObjectEmptyLiteral = Record<string, never>;
 
 type PrevIndex = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-export type NestedKeys<T extends ObjectLiteral, Depth extends number = 4> =
-    T extends ObjectLiteral ?
-        (
-            [Depth] extends [0] ? never :
-                {[Key in keyof T & (string | number)]: T[Key] extends Record<string, any> | undefined
-                    ? (T[Key] extends Date ? `${Key}` : `${Key}.${NestedKeys<T[Key], PrevIndex[Depth]>}` | `${Key}`)
-                    : `${Key}`
-                }[keyof T & (string | number)]
-        ) : string;
+export type NestedKeys<T extends ObjectLiteral, Depth extends number = 4> =    T extends ObjectLiteral ?
+    (
+        [Depth] extends [0] ? never :
+            { [Key in keyof T & (string | number)]: T[Key] extends Record<string, any> | undefined ?
+                (T[Key] extends Date ? `${Key}` : `${Key}.${NestedKeys<T[Key], PrevIndex[Depth]>}` | `${Key}`) :
+                    `${Key}`
+            }[keyof T & (string | number)]
+    ) : string;
 
 export type TypeFromNestedKeyPath<
     T extends ObjectLiteral,
     Path extends string,
 > = {
-    [K in Path]: K extends keyof T
-        ? T[K]
-        : K extends `${infer P}.${infer S}`
-            ? T[P] extends ObjectLiteral
-                ? TypeFromNestedKeyPath<NonNullable<T[P]>, S>
-                : undefined
-            : never;
+    [K in Path]: K extends keyof T ?
+        T[K] :
+        K extends `${infer P}.${infer S}` ?
+            T[P] extends ObjectLiteral ?
+                TypeFromNestedKeyPath<NonNullable<T[P]>, S> :
+                undefined :
+            never;
 }[Path];
 
 export type FlattenObject<O extends ObjectLiteral> = {
@@ -71,23 +70,19 @@ export type DeepMerge<T1, T2> = T1 extends ObjectEmptyLiteral ? T2 :
                 (
                     {
                         [K in (keyof T2 & keyof T1 & RequiredKeys<T1 | T2>)]: DeepMerge<T1[K], T2[K]>
-                    }
-                    &
+                    }                    &
                     {
                         [K in (keyof T2 & keyof T1 & OptionalKeys<T1 | T2>)]?: DeepMerge<T1[K], T2[K]>
-                    }
-                    & {
+                    } &
+                    {
                         [K in Exclude<RequiredKeys<T1>, keyof T2>]: T1[K]
-                    }
-                    &
+                    }                    &
                     {
                         [K in Exclude<OptionalKeys<T1>, keyof T2>]?: T1[K]
-                    }
-                    &
+                    }                    &
                     {
                         [K in Exclude<RequiredKeys<T2>, keyof T1>]: T2[K]
-                    }
-                    &
+                    }                    &
                     {
                         [K in Exclude<OptionalKeys<T2>, keyof T1>]?: T2[K]
                     }
@@ -112,6 +107,8 @@ export type Validators<T extends ObjectLiteral> = {
     [K in keyof T]?: Validator<T[K]>
 };
 
+// Retain the published interface name for declaration merging.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface GetterContext {
     has(key: string) : any;
 
@@ -155,9 +152,9 @@ export type GettersToRecord<
 > = {
     [K in keyof T]: T[K] extends Getters ?
         GettersToRecord<T[K]> :
-        (T[K] extends (...args: any[]) => infer R
-            ? R
-            : never)
+        (T[K] extends (...args: any[]) => infer R ?
+            R :
+            never)
 };
 
 export type ContainerProxy<
@@ -166,7 +163,7 @@ export type ContainerProxy<
     GETTERS extends ObjectLiteral = ObjectLiteral,
     E = DeepMerge<DATA, DEFAULTS>,
 > = E & ReadonlyDeep<
-GettersToRecord<
-Omit<GETTERS, keyof E>
->
+    GettersToRecord<
+        Omit<GETTERS, keyof E>
+    >
 >;

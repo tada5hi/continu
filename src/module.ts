@@ -8,19 +8,23 @@
 import { OptionMissError } from './error';
 import { evaluatePathForDynamicGetters } from './getter';
 import type {
-    DeepMerge, FlattenObject,
+    DeepMerge,
+    FlattenObject,
     GetterContext,
     Getters,
     GettersToRecord,
     ObjectLiteral,
     OptionalKeys,
-    Options, ResetKeys,
+    Options,
+    ResetKeys,
     Transformers,
     Validators,
-} from './type';
+} from './types';
 import {
     getObjectPathProperty,
-    hasObjectPathProperty, hasOwnProperty, isObject,
+    hasObjectPathProperty,
+    hasOwnProperty,
+    isObject,
     isValidatorResult,
     removeObjectPathProperty,
     setObjectPathProperty,
@@ -63,6 +67,7 @@ export class Container<
 
     setRaw<K extends keyof FlattenObject<DataDefaults>>(key: K, value: unknown) : this {
         const transformer = this.transformers[key];
+
         if (!transformer) {
             return this;
         }
@@ -79,14 +84,16 @@ export class Container<
     set(key: string | Partial<ObjectLiteral>, value?: any) : this {
         if (isObject(key)) {
             const keys = Object.keys(key);
-            for (let i = 0; i < keys.length; i++) {
-                this.set(keys[i] as keyof FlattenObject<DataDefaults>, key[keys[i]]);
+
+            for (const key_ of keys) {
+                this.set(key_ as keyof FlattenObject<DataDefaults>, key[key_]);
             }
 
             return this;
         }
 
         const validator = this.validators[key];
+
         if (validator) {
             try {
                 const output = validator(value);
@@ -100,7 +107,7 @@ export class Container<
                 if (typeof output === 'boolean' && output) {
                     setObjectPathProperty(this.data, key, value);
                 }
-            } catch (e) {
+            } catch {
                 // do nothing
             }
 
@@ -126,6 +133,7 @@ export class Container<
 
         if (evaluateGetter) {
             const getter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
+
             return getter.success;
         }
 
@@ -140,8 +148,8 @@ export class Container<
 
     reset(key: ResetKeys<DATA, DefaultGetters> | ResetKeys<DATA, DefaultGetters>[]) : this {
         if (Array.isArray(key)) {
-            for (let i = 0; i < key.length; i++) {
-                this.reset(key[i]);
+            for (const element of key) {
+                this.reset(element);
             }
 
             return this;
@@ -170,8 +178,8 @@ export class Container<
 
             const options : Record<string, any> = {};
 
-            for (let i = 0; i < keys.length; i++) {
-                options[keys[i]] = this.get(keys[i] as keyof FlattenObject<DataDefaultsGetters>);
+            for (const key_ of keys) {
+                options[key_] = this.get(key_ as keyof FlattenObject<DataDefaultsGetters>);
             }
 
             return options;
@@ -182,6 +190,7 @@ export class Container<
         }
 
         const dynamicGetter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
+
         if (dynamicGetter.success) {
             return dynamicGetter.data;
         }
@@ -206,10 +215,11 @@ export class Container<
     setDefault(key: string | Partial<ObjectLiteral>, value?: any) : this {
         if (typeof key === 'object') {
             const keys = Object.keys(key);
-            for (let i = 0; i < keys.length; i++) {
+
+            for (const key_ of keys) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                this.setDefault(keys[i], key[keys[i]]);
+                this.setDefault(key_, key[key_]);
             }
 
             return this;
@@ -230,8 +240,8 @@ export class Container<
 
     resetDefault(key: OptionalKeys<DEFAULTS> | OptionalKeys<DEFAULTS>[]) : this {
         if (Array.isArray(key)) {
-            for (let i = 0; i < key.length; i++) {
-                this.resetDefault(key[i] as OptionalKeys<DEFAULTS>);
+            for (const element of key) {
+                this.resetDefault(element as OptionalKeys<DEFAULTS>);
             }
 
             return this;
