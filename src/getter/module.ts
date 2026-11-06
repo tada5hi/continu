@@ -6,7 +6,12 @@
  */
 
 import type { GetterContext } from '../types';
-import { getObjectPathProperty, hasObjectPathProperty, isObject } from '../utils';
+import {
+    getObjectPathProperty,
+    hasObjectPathProperty,
+    hasOwnProperty,
+    isObject,
+} from '../utils';
 
 type Output = {
     success: true,
@@ -22,6 +27,10 @@ export function evaluatePathForDynamicGetters(
     const currentKey = dotIndex === -1 ?
         key :
         key.substring(0, dotIndex);
+
+    if (!hasOwnProperty(data, currentKey)) {
+        return { success: false };
+    }
 
     if (typeof data[currentKey] === 'function') {
         const value = data[currentKey](context);

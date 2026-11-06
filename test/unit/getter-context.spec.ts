@@ -49,3 +49,27 @@ it('evaluated getter presence distinguishes missing, undefined and inherited suf
     expect(container.get('array.0')).toBe('first');
     expect(container.has('nullable.port' as never, true)).toBe(false);
 });
+
+it('only registered own getter paths are evaluated, including nested registries', () => {
+    const empty = new Container();
+    const container = new Container({
+        getters: {
+            nested: {},
+            inherited: Object.create({ other: () => 'inherited' }),
+            own: () => ({ toString: 'owned result' }),
+            result: defineGetter((context) => [
+                context.hasGetter('toString'),
+                context.getGetter('toString'),
+                context.getGetter('nested.toString'),
+            ]),
+        },
+    });
+
+    expect(empty.hasGetter('toString')).toBe(false);
+    expect(empty.getGetter('toString')).toBeUndefined();
+    expect(empty.getGetter('constructor')).toBeUndefined();
+    expect(container.getGetter('nested.toString')).toBeUndefined();
+    expect(container.getGetter('inherited.other')).toBeUndefined();
+    expect(container.getGetter('own.toString')).toBe('owned result');
+    expect(container.get('result')).toEqual([false, undefined, undefined]);
+});
