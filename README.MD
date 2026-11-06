@@ -4,7 +4,6 @@
 [![main](https://github.com/tada5hi/continu/actions/workflows/main.yml/badge.svg)](https://github.com/tada5hi/continu/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/tada5hi/continu/branch/master/graph/badge.svg?token=L65RSE7BT1)](https://codecov.io/gh/tada5hi/continu)
 [![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/continu/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/continu?targetFile=package.json)
-[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
 **Continu** is a powerful tool for managing key-value pairs in an application.
 Its simple and lightweight design makes it easy to use.
