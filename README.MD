@@ -214,7 +214,7 @@ try {
 
 `get(key)` checks stored data, a matching getter, then defaults. Missing keys return `undefined`, or throw `OptionMissError` with `errorOnMiss: true`. `get()` collects top-level data/default/getter keys and resolves each one; it does not recursively deep-merge nested records.
 
-`set(record)` applies each top-level entry through `set(key, value)`. Dotted paths are supported for reading and writing nested data. Use `has(key, true)` to evaluate nested dynamic getters during an existence check.
+`set(record)` applies each top-level entry through `set(key, value)`. Dotted paths are supported for reading and writing nested data. Use `has(key, true)` to evaluate nested dynamic getters during an existence check. A missing getter-result property is absent; an own property explicitly set to `undefined` is present. Getter results still take precedence over defaults when reading a matching getter path.
 
 | Option | Default | Purpose |
 |---|---|---|
@@ -224,6 +224,8 @@ try {
 | `transformers` | `{}` | Convert unknown input used by `setRaw` |
 | `validators` | `{}` | Accept, reject or replace values on `set` |
 | `errorOnMiss` | `false` | Throw when no source contains a key |
+
+`hasGetter(key)` checks for a registered getter function without evaluating it; `getGetter(key)` evaluates a getter path directly, bypassing stored data and defaults, and returns `undefined` when no getter matches. Getter contexts provide these operations alongside `get`, `has`, `getDefault` and `hasDefault`.
 
 `setDefault`, `getDefault`, `hasDefault` and `resetDefault` manage fallbacks separately. `define` and `defineGetter` preserve their input and help retain inferred types.
 

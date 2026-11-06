@@ -40,8 +40,12 @@ export function hasObjectPathProperty(data: ObjectLiteral, key: string) : boolea
         key :
         key.substring(0, index);
 
+    if (data === null || typeof data === 'undefined' || !hasOwnProperty(data, currentKey)) {
+        return false;
+    }
+
     if (index === -1) {
-        return !!hasOwnProperty(data, currentKey);
+        return true;
     }
 
     if (!isObject(data[currentKey])) {

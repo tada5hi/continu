@@ -134,10 +134,21 @@ export class Container<
         if (evaluateGetter) {
             const getter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
 
-            return getter.success;
+            return getter.success && getter.exists;
         }
 
         return false;
+    }
+
+    hasGetter(key: string) : boolean {
+        return hasObjectPathProperty(this.getters, key) &&
+            typeof getObjectPathProperty(this.getters, key) === 'function';
+    }
+
+    getGetter(key: string) : any {
+        const getter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
+
+        return getter.success ? getter.data : undefined;
     }
 
     // ----------------------------------------------
