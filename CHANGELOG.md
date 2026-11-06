@@ -8,6 +8,25 @@
 # [1.2.0](https://github.com/Tada5hi/continu/compare/v1.1.0...v1.2.0) (2023-03-30)
 
 
+## [2.0.0](https://github.com/tada5hi/continu/compare/v1.3.2...v2.0.0) (2026-11-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* The promoted API replaces the published Continu export with Container and constructor options with data, and removes reset() without a key and bulk setRaw(record). Record this existing API break for release-please before generating the next release from the unchanged 1.3.2 baseline.
+* public api changed
+
+### Features
+
+* refactored public api ([a914623](https://github.com/tada5hi/continu/commit/a91462342adb4fdf90f0bcb2e3b5aaf4f44db8e1))
+* refactoring public api ([bf38088](https://github.com/tada5hi/continu/commit/bf38088268fa7c8ade445a171de32c0d368fb51c))
+
+
+### Bug Fixes
+
+* correct optional paths and getter context after promotion ([0396245](https://github.com/tada5hi/continu/commit/03962452690167c6311432cb6d9b321e73653d3d))
+* ignore inherited getter registry properties ([388f066](https://github.com/tada5hi/continu/commit/388f066bc9c3ab8730689214aa70b00d97c47d13))
+
 ## v1.3.1
 
 [compare changes](https://github.com/Tada5hi/continu/compare/v1.3.0...v1.3.1)
