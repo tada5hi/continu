@@ -4,7 +4,7 @@ A key-value container with defaults, transformations and validation.
 
 ## Quick Reference
 
-Use Node 24.11 or newer within the 24.x line for development and npm for dependency management. The package manifest does not declare a Node runtime floor. Build-tool requirements do not authorize changing the published runtime contract.
+Development tooling requires Node `^24.15.0 || >=26.0.0`; use npm for dependency management. The package manifest does not declare a Node runtime floor. Build-tool requirements do not authorize changing the published runtime contract.
 
 ```bash
 npm ci
@@ -22,7 +22,7 @@ npm run lint
 
 ### Writing agent docs
 
-Update guides only when an invariant or cross-cutting rule changes. Edit the existing line and describe current behavior; keep defect stories and change history in commits or PRs. Do not add a section for a single fix.
+Keep existing commands, paths and factual descriptions current. Add guide content only for an invariant or cross-cutting rule. Edit the existing line and describe current behavior; keep defect stories and change history in commits or PRs. Do not add a section for a single fix.
 
 `npm run lint` includes the shared `agentDocs` size, import-budget and history-phrase checks.
 
