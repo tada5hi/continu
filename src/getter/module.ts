@@ -5,14 +5,14 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ContinuBaseInterface } from '../type';
+import type { GetterContext } from '../types';
 import { getObjectPathProperty, isObject } from '../utils';
 
-type Output = { success: true, data: any } | { success: false};
+type Output = { success: true, data: any } | { success: false };
 export function evaluatePathForDynamicGetters(
     data: Record<string, any>,
     key: string,
-    context: ContinuBaseInterface,
+    context: GetterContext,
 ) : Output {
     const dotIndex = key.indexOf('.');
     const currentKey = dotIndex === -1 ?
@@ -37,6 +37,7 @@ export function evaluatePathForDynamicGetters(
 
     if (isObject(data[currentKey])) {
         const nextKey = key.substring(currentKey.length + 1);
+
         if (nextKey.length > 0) {
             return evaluatePathForDynamicGetters(data[currentKey], nextKey, context);
         }
