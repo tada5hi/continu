@@ -13,8 +13,8 @@ type PrevIndex = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 export type NestedKeys<T extends ObjectLiteral, Depth extends number = 4> =    T extends ObjectLiteral ?
     (
         [Depth] extends [0] ? never :
-            { [Key in keyof T & (string | number)]: T[Key] extends Record<string, any> | undefined ?
-                (T[Key] extends Date ? `${Key}` : `${Key}.${NestedKeys<T[Key], PrevIndex[Depth]>}` | `${Key}`) :
+            { [Key in keyof T & (string | number)]: NonNullable<T[Key]> extends Record<string, any> ?
+                (NonNullable<T[Key]> extends Date ? `${Key}` : `${Key}.${NestedKeys<NonNullable<T[Key]>, PrevIndex[Depth]>}` | `${Key}`) :
                     `${Key}`
             }[keyof T & (string | number)]
     ) : string;
@@ -26,8 +26,8 @@ export type TypeFromNestedKeyPath<
     [K in Path]: K extends keyof T ?
         T[K] :
         K extends `${infer P}.${infer S}` ?
-            T[P] extends ObjectLiteral ?
-                TypeFromNestedKeyPath<NonNullable<T[P]>, S> :
+            NonNullable<T[P]> extends ObjectLiteral ?
+                TypeFromNestedKeyPath<NonNullable<T[P]>, S> | (T[P] extends NonNullable<T[P]> ? never : undefined) :
                 undefined :
             never;
 }[Path];

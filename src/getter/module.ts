@@ -6,9 +6,13 @@
  */
 
 import type { GetterContext } from '../types';
-import { getObjectPathProperty, isObject } from '../utils';
+import { getObjectPathProperty, hasObjectPathProperty, isObject } from '../utils';
 
-type Output = { success: true, data: any } | { success: false };
+type Output = {
+    success: true,
+    data: any,
+    exists: boolean,
+} | { success: false };
 export function evaluatePathForDynamicGetters(
     data: Record<string, any>,
     key: string,
@@ -26,12 +30,14 @@ export function evaluatePathForDynamicGetters(
             return {
                 success: true,
                 data: value,
+                exists: true,
             };
         }
 
         return {
             success: true,
-            data: getObjectPathProperty(value, key.substring(currentKey.length + 1)),
+            data: value === null || typeof value === 'undefined' ? undefined : getObjectPathProperty(value, key.substring(currentKey.length + 1)),
+            exists: hasObjectPathProperty(value, key.substring(currentKey.length + 1)),
         };
     }
 
