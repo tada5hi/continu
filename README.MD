@@ -1,249 +1,125 @@
-# Continu 🐯
+<p align="center"><img src=".github/assets/logo.svg" width="144" height="144" alt="Continu logo" /></p>
+<h1 align="center">Continu</h1>
+<p align="center"><strong>Zero dependency container/config library.</strong></p>
+<p align="center">Keep configuration data, fallback values and computed settings behind one typed container.</p>
+<p align="center">
+  <a href="https://www.npmjs.com/package/continu"><img src="https://img.shields.io/npm/v/continu" alt="npm version" /></a>
+  <a href="https://github.com/tada5hi/continu/actions"><img src="https://img.shields.io/github/actions/workflow/status/tada5hi/continu/main.yml" alt="CI status" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/continu" alt="License" /></a>
+</p>
+<p align="center"><a href="#installation">Installation</a> · <a href="#usage">Usage</a> · <a href="#api">API</a> · <a href="#notes">Notes</a></p>
 
-[![npm version](https://badge.fury.io/js/continu.svg)](https://badge.fury.io/js/continu)
-[![main](https://github.com/tada5hi/continu/actions/workflows/main.yml/badge.svg)](https://github.com/tada5hi/continu/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/tada5hi/continu/branch/master/graph/badge.svg?token=L65RSE7BT1)](https://codecov.io/gh/tada5hi/continu)
-[![Known Vulnerabilities](https://snyk.io/test/github/Tada5hi/continu/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Tada5hi/continu?targetFile=package.json)
+---
 
-**Continu** is a powerful tool for managing key-value pairs in an application.
-Its simple and lightweight design makes it easy to use.
-Besides, defining default values it is also possible to execute transformations & validations before setting any value.
+## Why Continu?
 
-**Table of Contents**
+Keep configuration data, fallback values and computed settings behind one typed container.
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Basic](#basic)
-  - [Defaults](#defaults)
-  - [Transformation](#transformation)
-  - [Validation](#validation)
-  - [Nesting](#nesting)
-  - [Getters](#getters)
-- [Contributing](#contributing)
-- [License](#license)
+| Concern | Without it | With it |
+|---|---|---|
+| Fallbacks | Repeat conditional reads | Resolve data, then getters, then defaults |
+| Input conversion | Parse values at every entry point | Apply configured transformers with setRaw |
+| Validation | Guard every assignment manually | Validate set calls before storing values |
+
+Container.get first checks stored data, then evaluates a matching getter, then reads defaults; a missing key returns undefined or throws when errorOnMiss is enabled.
+
+<img src=".github/assets/mechanism.svg" width="960" alt="Container.get first checks stored data, then evaluates a matching getter, then reads defaults; a missing key returns undefined or throws when errorOnMiss is enabled." />
 
 ## Installation
 
 ```bash
-npm install continu --save
+npm install continu
 ```
+
+The package manifest does not declare a Node runtime minimum. ESM, CommonJS and TypeScript declarations are included. Import the documented package entrypoint rather than undeclared `dist/` paths.
 
 ## Usage
 
-### Basic
-
-On the basic level, this library can be used as container for arbitrary key value pairs.
-
 ```typescript
-import { Continu } from 'continu';
+import { createContainer } from 'continu';
 
-type Options = {
-    foo: string
-}
-
-const continu = new Continu<Options>();
-
-console.log(continu.has('foo'));
-// false
-console.log(continu.get('foo'));
-// undefined
-
-continu.set('foo', 'bar');
-
-console.log(continu.has('foo'));
-// true
-console.log(continu.get('foo'));
-// bar
-
-continu.reset('foo');
-
-console.log(continu.has('foo'));
-// false
-```
-
-### Defaults
-It is also possible to define default values which are returned if a given value is not set.
-
-```typescript
-import { Continu } from 'continu';
-
-type Options = {
-    foo: string
-}
-
-const continu = new Continu<Options>({
-    defaults: {
-        foo: 'bar'
-    }
+const config = createContainer({
+    defaults: { port: 3000 },
+    transformers: { port: (value) => Number(value) },
+    validators: { port: (value) => value > 0 },
 });
-
-console.log(continu.has('foo'));
-// false
-console.log(continu.get('foo'));
-// 'bar'
-
-continu.set('foo', 'baz');
-
-console.log(continu.has('foo'));
-// true
-console.log(continu.get('foo'));
-// 'baz'
-
+config.setRaw('port', '8080');
+console.log(config.get('port')); // 8080
+config.set('port', -1);
+console.log(config.get('port')); // 8080: invalid write is ignored
 ```
 
-### Transformation
+## Resolution and writes
 
-Transformers can be used to accept multiple input formats.
-The data can than be converted to the appropriate format before setting.
-Therefore, the `setRaw` method must be used.
+`get(key)` checks stored data, a matching getter, then defaults. Missing keys return `undefined`, or throw `OptionMissError` with `errorOnMiss: true`. `get()` collects top-level data/default/getter keys and resolves each one; it does not recursively deep-merge nested records.
 
-```typescript
-import { Continu } from 'continu';
+`set(record)` applies each top-level entry through `set(key, value)`. Dotted paths are supported for reading and writing nested data. Use `has(key, true)` to evaluate nested dynamic getters during an existence check.
 
-type Options = {
-    foo: string
-}
+| Option | Default | Purpose |
+|---|---|---|
+| `data` | `{}` | Initial stored values |
+| `defaults` | `{}` | Fallback values |
+| `getters` | `{}` | Functions receiving a context with `get` and `has` |
+| `transformers` | `{}` | Convert unknown input used by `setRaw` |
+| `validators` | `{}` | Accept, reject or replace values on `set` |
+| `errorOnMiss` | `false` | Throw when no source contains a key |
 
-const continu = new Continu<Options>({
-    transformers: {
-        foo: (value) => {
-            if(typeof value === 'number') {
-                return `${value}`;
-            }
+`setDefault`, `getDefault`, `hasDefault` and `resetDefault` manage fallbacks separately. `define` and `defineGetter` preserve their input and help retain inferred types.
 
-            if(typeof value === 'string') {
-                return value;
-            }
+## API
 
-            throw new Error('Option could not be transformed.')
-        }
-    }
-});
+All names below are exported from `continu`. Types have no runtime value.
 
-continu.set('foo', '123');
+| Export | Kind | Purpose |
+|---|---|---|
+| `createContainer` | function | Construct a typed Container |
+| `define` | function | Return an input unchanged with its inferred type |
+| `defineGetter` | function | Return a getter unchanged with its inferred type |
+| `OptionMissError` | class | Error raised on a missing setting when configured |
+| `Container` | class | Read/write settings with defaults, getters and validation |
+| `ObjectLiteral` | type | Type contract for object literal |
+| `ObjectEmptyLiteral` | type | Type contract for object empty literal |
+| `NestedKeys` | type | Type contract for nested keys |
+| `TypeFromNestedKeyPath` | type | Type contract for type from nested key path |
+| `FlattenObject` | type | Type contract for flatten object |
+| `KeysOfType` | type | Type contract for keys of type |
+| `RequiredKeys` | type | Type contract for required keys |
+| `OptionalKeys` | type | Type contract for optional keys |
+| `ResetKeys` | type | Type contract for reset keys |
+| `DeepMerge` | type | Type contract for deep merge |
+| `Transformer` | type | Type contract for transformer |
+| `Transformers` | type | Type contract for transformers |
+| `ValidatorResult` | type | Type contract for validator result |
+| `Validator` | type | Type contract for validator |
+| `Validators` | type | Type contract for validators |
+| `GetterContext` | interface | Type contract for getter context |
+| `Getter` | type | Type contract for getter |
+| `Getters` | type | Type contract for getters |
+| `Options` | type | Type contract for options |
+| `GettersToRecord` | type | Type contract for getters to record |
+| `ContainerProxy` | type | Type contract for container proxy |
+| `hasOwnProperty` | function | Check own-property membership |
+| `setObjectPathProperty` | function | Assign an object property through a dotted path |
+| `hasObjectPathProperty` | function | Check own-property membership along a dotted path |
+| `removeObjectPathProperty` | function | Remove a top-level property; nested deletion is limited (see Notes) |
+| `getObjectPathProperty` | function | Read a dotted object path |
+| `isObject` | function | Check for a non-null non-array object |
+| `isValidatorResult` | function | Recognize success plus data/error validator results |
 
-console.log(continu.get('foo'));
-// '123'
+## Notes
 
-continu.set('foo', 456);
-
-console.log(continu.get('foo'));
-// '456'
-
-continu.set('foo', {bar: 'baz'});
-// this statement will throw an error!
-```
-
-### Validation
-
-Validators can be useful for defining constraints and prevent values from being set,
-if they don't match specific criteria.
-
-```typescript
-import { Continu } from 'continu';
-
-type Options = {
-    foo: string
-}
-
-const continu = new Continu<Options>({
-    validators: {
-        foo: (value) => typeof value === 'string' && value.length > 3,
-    }
-});
-
-continu.set('foo', 'bar');
-
-console.log(continu.get('foo'));
-// undefined
-
-continu.set('foo', 'bar-baz');
-
-console.log(continu.get('foo'));
-// 'bar-baz'
-
-```
-
-### Nesting
-
-When using nested object types, it is also possible to use key paths (separated by `.`) to
-access properties in depth.
-
-```typescript
-import { Continu } from 'continu';
-
-type Options = {
-    nested: {
-        foo: string
-    }
-}
-
-const continu = new Continu<Options>();
-
-console.log(continu.has('nested.foo'));
-// false
-console.log(continu.get('nested.foo'));
-// undefined
-
-continu.set('nested.foo', 'bar');
-
-console.log(continu.has('nested.foo'));
-// true
-console.log(continu.get('nested.foo'));
-// 'bar'
-
-console.log(continu.has('nested'));
-// true;
-console.log(continu.get('nested'));
-// { foo: 'bar' }
-```
-
-### Getters
-
-It is also possible to define dynamic getters for specific key (paths).
-
-```typescript
-import { Continu } from 'continu';
-
-type Options = {
-    foo: string,
-    nested: {
-        baz: string
-    }
-}
-
-const continu = new Continu<Options>({
-    defaults: {
-        foo: 'bar'
-    },
-    getters: {
-        nested: (context) => {
-            return {
-                baz: context.getDefault('foo')
-            }
-        }
-    }
-});
-
-// always evaluates to false,
-// since a key path may not be accessible until a getter has been evaluated.
-console.log(continu.has('nested'));
-
-console.log(continu.get('nested'));
-// { foo: 'bar' }
-
-console.log(continu.get('nested.baz'));
-// 'bar'
-```
+- **Validation is silent.** A validator must return `true` or `{ success: true, data }` to store a value. Other results and thrown errors leave the prior value unchanged. Validators run on `set`, not on initial data, defaults or getter results.
+- **Transformation is explicit.** `setRaw` uses a transformer before `set`; with no transformer it does nothing. `set` does not transform input.
+- **Reads are live.** Getters run on access and are not cached. A present data property wins even when its value is `undefined`.
+- **Nested reset is limited.** Top-level `reset` removes stored data to expose a fallback. The current nested-path removal helper does not delete nested properties; do not rely on dotted `reset` or `resetDefault` to remove them.
+- **Public entrypoint.** Import from `continu`. The internal `createProxy` implementation is not exported from the package root.
 
 ## Contributing
 
-Before starting to work on a pull request, it is important to review the guidelines for
-[contributing](./CONTRIBUTING.md) and the [code of conduct](./CODE_OF_CONDUCT.md).
-These guidelines will help to ensure that contributions are made effectively and are accepted.
+Read the [contribution guidelines](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
 Made with 💚
 
-Published under [MIT License](./LICENSE).
+Published under the [MIT License](LICENSE).
