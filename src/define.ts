@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { Getter } from './type';
+import type { Getter } from './types';
 
 export function define<T>(input: T) : T {
     return input;

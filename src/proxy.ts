@@ -8,7 +8,7 @@
 import type { Container } from './module';
 import type {
     ContainerProxy,
-} from './type';
+} from './types';
 
 type ToContainerProxy<T> = T extends Container<infer DATA, infer DEFAULT, infer GETTERS> ?
     ContainerProxy<DATA, DEFAULT, GETTERS> :

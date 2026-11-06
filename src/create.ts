@@ -6,7 +6,7 @@
  */
 
 import { Container } from './module';
-import type { Getters, ObjectLiteral, Options } from './type';
+import type { Getters, ObjectLiteral, Options } from './types';
 
 export function createContainer<
     DATA extends ObjectLiteral = Record<string, never>,
