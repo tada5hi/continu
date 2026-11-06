@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="continu-a-title continu-a-desc">
+<title id="continu-a-title">Continu — The checked drawer</title>
+<desc id="continu-a-desc">A three-drawer value cabinet accepts a checked value, while a lower drawer holds a fallback.</desc>
+<style>
+:root{--accent:#cf7831;--second:#526ba4;--ink:#253447;--paper:#f7fafc;--line:#8394a7;--wash:#cf783118}
+@media(prefers-color-scheme:dark){:root{--ink:#e4ebf3;--paper:#182332;--line:#8495aa;--wash:#cf783122}}
+.a{stroke:var(--accent)}.b{stroke:var(--second)}.af{fill:var(--accent)}.bf{fill:var(--second)}.ink{fill:var(--ink)}.paper{stroke:var(--line)}.line{stroke:var(--line)}.wash{fill:var(--wash)}.white{fill:#fff}.neutral{fill:var(--paper)}
+</style>
+<path d="M57 45 H187 V214 H57 Z" class="b" stroke-width="6" fill="var(--paper)" stroke-linecap="round" stroke-linejoin="round" /><path d="M57 99 H187 M57 155 H187" class="line" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /><rect x="82" y="67" width="56" height="8" rx="4" class="bf" /><rect x="82" y="123" width="56" height="8" rx="4" class="bf" /><rect x="82" y="179" width="56" height="8" rx="4" class="af" /><path d="M71 214 V226 M173 214 V226" class="b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" /><circle cx="190" cy="77" r="33" class="af" /><path d="M174 77 L186 89 L207 65" class="" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke="#fff"/><path d="M33 172 H48 M33 187 H48 M33 202 H48" class="a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

@@ -8,190 +8,195 @@
 import { OptionMissError } from './error';
 import { evaluatePathForDynamicGetters } from './getter';
 import type {
-    Context,
-    ContinuBaseInterface,
-    FlattenObject, Getters,
+    DeepMerge,
+    FlattenObject,
+    GetterContext,
+    Getters,
+    GettersToRecord,
     ObjectLiteral,
-    Transformer,
+    OptionalKeys,
+    Options,
+    ResetKeys,
     Transformers,
     Validators,
-} from './type';
+} from './types';
 import {
     getObjectPathProperty,
     hasObjectPathProperty,
     hasOwnProperty,
+    isObject,
     isValidatorResult,
     removeObjectPathProperty,
     setObjectPathProperty,
 } from './utils';
 
-export class Continu<
-    O extends ObjectLiteral,
-    I extends { [K in keyof O]?: any } = { [K in keyof O]?: any },
-> implements ContinuBaseInterface<O> {
-    protected options : Partial<O>;
+export class Container<
+    DATA extends ObjectLiteral = Record<string, never>,
+    DEFAULTS extends ObjectLiteral = Record<string, never>,
+    GETTERS extends Getters = Record<string, never>,
 
-    protected defaults: Partial<O>;
+    DataDefaults extends DeepMerge<DATA, DEFAULTS> = DeepMerge<DATA, DEFAULTS>,
+    DefaultGetters extends DeepMerge<DEFAULTS, GETTERS> = DeepMerge<DEFAULTS, GETTERS>,
+    DataDefaultsGetters extends DeepMerge<DataDefaults, GettersToRecord<GETTERS>> = DeepMerge<DataDefaults, GettersToRecord<GETTERS>>,
+> {
+    protected data : DATA;
 
-    protected getters : Getters<O>;
+    protected defaults: DEFAULTS;
 
-    protected transformers: Transformers<O>;
+    protected getters : GETTERS;
 
-    protected validators : Validators<O>;
+    protected transformers: Transformers<DataDefaults>;
+
+    protected validators : Validators<DataDefaults>;
 
     protected errorOnMiss: boolean;
 
     // -------------------------------------------------
 
-    constructor(context?: Context<O>) {
-        context = context || {};
+    constructor(options: Options<DATA, DEFAULTS, GETTERS, DataDefaults> = {}) {
+        this.data = options.data || {} as DATA;
+        this.defaults = options.defaults || {} as DEFAULTS;
+        this.getters = options.getters || {} as GETTERS;
+        this.transformers = options.transformers || {} as Transformers<DataDefaults>;
+        this.validators = options.validators || {} as Validators<DataDefaults>;
 
-        this.options = context.options || {};
-        this.defaults = context.defaults || {};
-        this.getters = context.getters || {};
-        this.transformers = context.transformers || {};
-        this.validators = context.validators || {};
-
-        this.errorOnMiss = context.errorOnMiss ?? false;
+        this.errorOnMiss = options.errorOnMiss ?? false;
     }
 
     // -------------------------------------------------
 
-    set(value: Partial<FlattenObject<O>>) : this;
+    setRaw<K extends keyof FlattenObject<DataDefaults>>(key: K, value: unknown) : this {
+        const transformer = this.transformers[key];
 
-    set<K extends keyof FlattenObject<O>>(key: K, value: FlattenObject<O>[K]) : this;
+        if (!transformer) {
+            return this;
+        }
 
-    set<K extends keyof FlattenObject<O>>(key: K | Partial<FlattenObject<O>>, value?: FlattenObject<O>[K]) : this {
-        if (typeof key === 'object') {
-            const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
-            for (let i = 0; i < keys.length; i++) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                this.set(keys[i], key[keys[i]]);
+        return this.set(key, transformer(value));
+    }
+
+    // -------------------------------------------------
+
+    set(value: Partial<DataDefaults>) : this;
+
+    set<K extends keyof FlattenObject<DataDefaults>>(key: K, value: FlattenObject<DataDefaults>[K]) : this;
+
+    set(key: string | Partial<ObjectLiteral>, value?: any) : this {
+        if (isObject(key)) {
+            const keys = Object.keys(key);
+
+            for (const key_ of keys) {
+                this.set(key_ as keyof FlattenObject<DataDefaults>, key[key_]);
             }
 
             return this;
         }
 
         const validator = this.validators[key];
+
         if (validator) {
             try {
                 const output = validator(value);
 
-                if (isValidatorResult<O[K]>(output)) {
+                if (isValidatorResult(output)) {
                     if (output.success) {
-                        setObjectPathProperty(this.options, key as any, output.data);
+                        setObjectPathProperty(this.data, key, output.data);
                     }
                 }
 
                 if (typeof output === 'boolean' && output) {
-                    setObjectPathProperty(this.options, key as any, value);
+                    setObjectPathProperty(this.data, key, value);
                 }
-            } catch (e) {
+            } catch {
                 // do nothing
             }
 
             return this;
         }
 
-        setObjectPathProperty(this.options, key as any, value);
+        setObjectPathProperty(this.data, key, value);
 
         return this;
     }
 
-    setRaw(value: Partial<FlattenObject<I>>) : this;
-
-    setRaw<K extends keyof FlattenObject<I>>(key: K, value: FlattenObject<I>[K]) : this;
-
-    setRaw<K extends keyof FlattenObject<I>>(key: K | FlattenObject<I>, value?: FlattenObject<I>[K]) : this {
-        if (typeof key === 'object') {
-            const keys = Object.keys(key) as (keyof FlattenObject<I>)[];
-            for (let i = 0; i < keys.length; i++) {
-                this.setRaw(keys[i], key[keys[i]]);
-            }
-
-            return this;
+    has(
+        key: keyof FlattenObject<DataDefaultsGetters>,
+        evaluateGetter?: boolean,
+    ) : boolean {
+        if (
+            hasObjectPathProperty(this.data, key as any) ||
+            hasObjectPathProperty(this.defaults, key as any) ||
+            hasOwnProperty(this.getters, key as any)
+        ) {
+            return true;
         }
 
-        if (hasOwnProperty(this.transformers, key)) {
-            this.set(key as any, (this.transformers[key] as Transformer<O[K]>)(value));
+        if (evaluateGetter) {
+            const getter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
 
-            return this;
+            return getter.success;
         }
 
-        if (hasOwnProperty(this.validators, key)) {
-            this.set(key as any, value as unknown as O[K]);
-        }
-
-        return this;
-    }
-
-    has(key: keyof FlattenObject<O>) : boolean {
-        return hasObjectPathProperty(this.options, key as any);
+        return false;
     }
 
     // ----------------------------------------------
 
-    reset() : this;
+    reset(key: ResetKeys<DATA, DefaultGetters>) : this;
 
-    reset(key: keyof FlattenObject<O>) : this;
+    reset(keys: ResetKeys<DATA, DefaultGetters>[]) : this;
 
-    reset(keys: (keyof FlattenObject<O>)[]) : this;
-
-    reset(key?: (keyof FlattenObject<O>) | (keyof FlattenObject<O>)[]) : this {
-        if (typeof key === 'undefined') {
-            this.options = {};
-            return this;
-        }
-
+    reset(key: ResetKeys<DATA, DefaultGetters> | ResetKeys<DATA, DefaultGetters>[]) : this {
         if (Array.isArray(key)) {
-            for (let i = 0; i < key.length; i++) {
-                this.reset(key[i]);
+            for (const element of key) {
+                this.reset(element);
             }
 
             return this;
         }
 
-        removeObjectPathProperty(this.options, key as any);
+        removeObjectPathProperty(this.data, key as any);
 
         return this;
     }
 
     // ----------------------------------------------
 
-    get() : O;
+    get() : DataDefaultsGetters;
 
-    get<K extends keyof FlattenObject<O>>(key: K) : FlattenObject<O>[K];
+    get<K extends keyof FlattenObject<DataDefaultsGetters>>(key: K) : FlattenObject<DataDefaultsGetters>[K];
 
-    get<K extends keyof FlattenObject<O>>(key?: K) : any {
+    get(key?: string) : any {
         if (typeof key === 'undefined') {
             const keys = [
                 ...new Set([
                     ...Object.keys(this.defaults),
-                    ...Object.keys(this.options),
+                    ...Object.keys(this.data),
+                    ...Object.keys(this.getters),
                 ]),
-            ] as (keyof FlattenObject<O>)[];
+            ];
 
             const options : Record<string, any> = {};
 
-            for (let i = 0; i < keys.length; i++) {
-                options[keys[i]] = this.get(keys[i]);
+            for (const key_ of keys) {
+                options[key_] = this.get(key_ as keyof FlattenObject<DataDefaultsGetters>);
             }
 
-            return options as O;
+            return options;
         }
 
-        if (hasObjectPathProperty(this.options, key)) {
-            return getObjectPathProperty(this.options, key) as O[K];
+        if (hasObjectPathProperty(this.data, key)) {
+            return getObjectPathProperty(this.data, key);
         }
 
-        const dynamicGetter = evaluatePathForDynamicGetters(this.getters, key, this);
+        const dynamicGetter = evaluatePathForDynamicGetters(this.getters, key, this as any as GetterContext);
+
         if (dynamicGetter.success) {
             return dynamicGetter.data;
         }
 
         if (hasObjectPathProperty(this.defaults, key)) {
-            return getObjectPathProperty(this.defaults, key) as O[K];
+            return getObjectPathProperty(this.defaults, key);
         }
 
         if (this.errorOnMiss) {
@@ -203,17 +208,18 @@ export class Continu<
 
     // ----------------------------------------------
 
-    setDefault(value: Partial<FlattenObject<O>>) : this;
+    setDefault(value: Partial<DEFAULTS>) : this;
 
-    setDefault<K extends keyof FlattenObject<O>>(key: K, value: FlattenObject<O>[K]) : this;
+    setDefault<K extends keyof DEFAULTS>(key: K, value: DEFAULTS[K]) : this;
 
-    setDefault<K extends keyof FlattenObject<O>>(key: (keyof O) | Partial<FlattenObject<O>>, value?: FlattenObject<O>[K]) : this {
+    setDefault(key: string | Partial<ObjectLiteral>, value?: any) : this {
         if (typeof key === 'object') {
-            const keys = Object.keys(key) as (keyof FlattenObject<O>)[];
-            for (let i = 0; i < keys.length; i++) {
+            const keys = Object.keys(key);
+
+            for (const key_ of keys) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
-                this.setDefault(keys[i], key[keys[i]]);
+                this.setDefault(key_, key[key_]);
             }
 
             return this;
@@ -224,25 +230,18 @@ export class Continu<
         return this;
     }
 
-    hasDefault(key: keyof FlattenObject<O>) : boolean {
+    hasDefault(key: keyof DEFAULTS) : boolean {
         return hasObjectPathProperty(this.defaults, key as any);
     }
 
-    resetDefault() : this;
+    resetDefault(key: OptionalKeys<DEFAULTS>) : this;
 
-    resetDefault(key: keyof FlattenObject<O>) : this;
+    resetDefault(keys: OptionalKeys<DEFAULTS>[]) : this;
 
-    resetDefault(keys: (keyof FlattenObject<O>)[]) : this;
-
-    resetDefault(key?: (keyof FlattenObject<O>) | (keyof FlattenObject<O>)[]) : this {
-        if (typeof key === 'undefined') {
-            this.defaults = {};
-            return this;
-        }
-
+    resetDefault(key: OptionalKeys<DEFAULTS> | OptionalKeys<DEFAULTS>[]) : this {
         if (Array.isArray(key)) {
-            for (let i = 0; i < key.length; i++) {
-                this.resetDefault(key[i]);
+            for (const element of key) {
+                this.resetDefault(element as OptionalKeys<DEFAULTS>);
             }
 
             return this;
@@ -253,11 +252,11 @@ export class Continu<
         return this;
     }
 
-    getDefault() : O;
+    getDefault() : DEFAULTS;
 
-    getDefault<K extends keyof FlattenObject<O>>(key?: K) : FlattenObject<O>[K];
+    getDefault<K extends keyof DEFAULTS>(key?: K) : DEFAULTS[K];
 
-    getDefault<K extends keyof FlattenObject<O>>(key?: K) : any {
+    getDefault<K extends keyof DEFAULTS>(key?: K) : any {
         if (typeof key === 'undefined') {
             return this.defaults;
         }

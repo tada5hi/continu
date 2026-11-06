@@ -1,76 +1,82 @@
 {
-  "name": "continu",
-  "version": "1.3.2",
-  "description": "Zero dependency container/config library.",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+    "name": "continu",
+    "version": "1.3.2",
+    "description": "Zero dependency container/config library.",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "main": "dist/index.cjs",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/",
+        ".github/assets"
+    ],
+    "scripts": {
+        "build:types": "tsc --emitDeclarationOnly",
+        "build:js": "tsdown",
+        "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && npm run build:js",
+        "commit": "npx git-cz",
+        "lint": "eslint src AGENTS.md CLAUDE.md .agents",
+        "lint:fix": "npm run lint -- --fix",
+        "test": "cross-env NODE_ENV=test vitest run --config test/vitest.config.mts",
+        "test:coverage": "npm test -- --coverage",
+        "prepare": "npx husky install",
+        "release": "npm run build && monoship"
+    },
+    "author": {
+        "name": "Peter Placzek",
+        "email": "contact@tada5hi.net",
+        "url": "https://github.com/tada5hi"
+    },
+    "license": "MIT",
+    "keywords": [
+        "config",
+        "config-container",
+        "container",
+        "option",
+        "options",
+        "validate",
+        "validation",
+        "transform",
+        "transformation",
+        "nested-object",
+        "key-path"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Tada5hi/continu.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Tada5hi/continu/issues"
+    },
+    "homepage": "https://github.com/Tada5hi/continu#readme",
+    "devDependencies": {
+        "@swc/core": "^1.3.101",
+        "@tada5hi/commitlint-config": "^1.1.4",
+        "@tada5hi/eslint-config": "^3.3.1",
+        "@tada5hi/tsconfig": "^0.5.0",
+        "@types/node": "^24.10.1",
+        "@vitest/coverage-v8": "^5.1.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^10.14.0",
+        "husky": "^8.0.3",
+        "monoship": "^2.2.1",
+        "tsdown": "^0.23.7",
+        "typescript": "^5.3.3",
+        "typescript-eslint": "^8.72.1",
+        "vitest": "^5.1.0"
+    },
+    "devEngines": {
+        "runtime": {
+            "name": "node",
+            "version": "^24.15.0 || >=26.0.0",
+            "onFail": "warn"
+        }
     }
-  },
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/"
-  ],
-  "scripts": {
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "rollup -c",
-    "build": "rimraf dist && npm run build:types && npm run build:js",
-    "commit": "npx git-cz",
-    "lint": "eslint --ext .js,.ts ./src",
-    "lint:fix": "npm run lint -- --fix",
-    "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
-    "test:coverage": "npm run test -- --coverage",
-    "prepare": "npx husky install",
-    "release": "npm run build && changelogen --release --push && npm publish"
-  },
-  "author": {
-    "name": "Peter Placzek",
-    "email": "contact@tada5hi.net",
-    "url": "https://github.com/tada5hi"
-  },
-  "license": "MIT",
-  "keywords": [
-    "config",
-    "config-container",
-    "container",
-    "option",
-    "options",
-    "validate",
-    "validation",
-    "transform",
-    "transformation",
-    "nested-object",
-    "key-path"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Tada5hi/continu.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Tada5hi/continu/issues"
-  },
-  "homepage": "https://github.com/Tada5hi/continu#readme",
-  "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.2",
-    "@swc/core": "^1.3.67",
-    "@swc/jest": "^0.2.26",
-    "@tada5hi/commitlint-config": "^1.0.3",
-    "@tada5hi/eslint-config-typescript": "^1.1.10",
-    "@tada5hi/semantic-release": "^0.1.0",
-    "@tada5hi/tsconfig": "^0.4.0",
-    "@types/jest": "^29.5.2",
-    "@types/node": "^20.3.2",
-    "cross-env": "^7.0.3",
-    "eslint": "^8.43.0",
-    "husky": "^8.0.3",
-    "jest": "^29.5.0",
-    "rollup": "^3.25.3",
-    "semantic-release": "^21.0.6",
-    "typescript": "^5.1.6"
-  }
 }

@@ -5,7 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
-import type { ObjectLiteral } from '../type';
+import type { ObjectLiteral } from '../types';
 import { hasOwnProperty } from './has-property';
 import { isObject } from './object';
 
@@ -21,6 +21,7 @@ export function setObjectPathProperty(
 
     if (index === -1) {
         record[currentKey] = value;
+
         return;
     }
 
@@ -29,6 +30,7 @@ export function setObjectPathProperty(
     }
 
     const nextKey = key.substring(currentKey.length + 1);
+
     setObjectPathProperty(record[currentKey], nextKey, value);
 }
 
@@ -47,6 +49,7 @@ export function hasObjectPathProperty(data: ObjectLiteral, key: string) : boolea
     }
 
     const nextKey = key.substring(currentKey.length + 1);
+
     return hasObjectPathProperty(data[currentKey], nextKey);
 }
 
@@ -72,6 +75,7 @@ export function removeObjectPathProperty(
     }
 
     const nextKey = key.substring(currentKey.length + 1);
+
     getObjectPathProperty(data[currentKey], nextKey);
 }
 
@@ -90,5 +94,6 @@ export function getObjectPathProperty(data: Record<string, any>, key: string) : 
     }
 
     const nextKey = key.substring(currentKey.length + 1);
+
     return getObjectPathProperty(data[currentKey], nextKey);
 }
